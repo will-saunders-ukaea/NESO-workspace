@@ -36,29 +36,38 @@ if(NOT COMMAND add_sycl_to_target)
   endfunction()
 endif()
 
-
 # put all targets in bin
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 # put all libraries in lib
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+  message(STATUS "Set CMAKE_BUILD_TYPE=RelWithDebInfo")
+endif()
+
+#add_compile_options(-O3)
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -DNDEBUG -O3")
+message(STATUS ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+
+
 set(EXECUTABLE global_move_bench)
 set(EXECUTABLE_SOURCE main.cpp)
 
 
-if(NOT NESO_PARTICLES_INCLUDE_DIRECTORIES)
-  message(ERROR "NESO_PARTICLES_INCLUDE_DIRECTORIES is not defined.")
+if(NOT NESO_PARTICLES_ROOT)
+  message(ERROR ": NESO_PARTICLES_ROOT is not defined.")
 endif()
 
+find_package(MPI REQUIRED)
 
 add_executable(${EXECUTABLE} ${EXECUTABLE_SOURCE})
 
-target_include_directories(${EXECUTABLE} PRIVATE ${NESO_PARTICLES_INCLUDE_DIRECTORIES})
-#target_link_libraries(${EXECUTABLE} PRIVATE ${LINK_LIBRARIES_COMMON})
+target_include_directories(${EXECUTABLE} PRIVATE ${NESO_PARTICLES_ROOT}/include
+                                                 ${MPI_CXX_INCLUDE_PATH})
+target_link_libraries(${EXECUTABLE} PRIVATE ${MPI_CXX_LINK_FLAGS}
+                                            ${MPI_CXX_LIBRARIES})
 
 # define the test executable as a sycl target
 add_sycl_to_target(TARGET ${EXECUTABLE} SOURCES ${EXECUTABLE_SOURCE})
-
-
-
-

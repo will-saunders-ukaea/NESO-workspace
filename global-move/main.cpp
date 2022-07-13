@@ -1,7 +1,11 @@
-#include "gtest/gtest.h"
 #include <iostream>
 #include <mpi.h>
+#include <neso_particles.hpp>
+#include <chrono>
+#include <csignal>
 
+using namespace cl;
+using namespace NESO::Particles;
 
 inline void global_move_driver(){
   const int ndim = 2;
@@ -14,7 +18,7 @@ inline void global_move_driver(){
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order);
 
-  SYCLTarget sycl_target{GPU_SELECTOR, mesh.get_comm()};
+  SYCLTarget sycl_target{0, mesh.get_comm()};
 
   Domain domain(mesh);
 
@@ -33,11 +37,16 @@ inline void global_move_driver(){
   std::mt19937 rng_vel(52234231);
   std::mt19937 rng_rank(18241);
 
-  const int N = 4096;
-  const int Ntest = 2024;
+  const int rank = sycl_target.comm_pair.rank_parent;
+
+  const int N = 100000;
+  const int Nsteps = 1024;
   const REAL dt = 0.001;
-  const REAL tol = 1.0e-10;
   const int cell_count = domain.mesh.get_cell_count();
+
+  if (rank == 0){
+    std::cout << "Starting..." << std::endl;
+  }
 
   auto positions =
       uniform_within_extents(N, ndim, mesh.global_extents, rng_pos);
@@ -66,16 +75,21 @@ inline void global_move_driver(){
     mapping[px_rank].push_back(px);
   }
 
+
   if (sycl_target.comm_pair.rank_parent == 0) {
     A.add_particles_local(initial_distribution);
   }
+  reset_mpi_ranks(A[Sym<INT>("NESO_MPI_RANK")]);
+  if (rank == 0){
+    std::cout << "Particles Added..." << std::endl;
+  }
+
 
   MeshHierarchyGlobalMap mesh_heirarchy_global_map(
       sycl_target, domain.mesh, A.position_dat, A.cell_id_dat, A.mpi_rank_dat);
 
   CartesianPeriodic pbc(sycl_target, mesh, A.position_dat);
-
-  reset_mpi_ranks(A[Sym<INT>("NESO_MPI_RANK")]);
+  CartesianCellBin ccb(sycl_target, mesh, A.position_dat, A.cell_id_dat);
 
   auto lambda_advect = [&] {
     auto k_P = A[Sym<REAL>("P")]->cell_dat.device_ptr();
@@ -86,6 +100,18 @@ inline void global_move_driver(){
     const auto pl_iter_range = A.mpi_rank_dat->get_particle_loop_iter_range();
     const auto pl_stride = A.mpi_rank_dat->get_particle_loop_cell_stride();
     const auto pl_npart_cell = A.mpi_rank_dat->get_particle_loop_npart_cell();
+
+    //std::cout << "pl_iter_range: " << pl_iter_range << " pl_stride: " << pl_stride << std::endl;
+    //
+    //int m = 0;
+    //int n = N;
+    //for(int cx=0 ; cx < cell_count ; cx++){
+    //  m = MAX(A.mpi_rank_dat->s_npart_cell[cx], m);
+    //  n = MIN(A.mpi_rank_dat->s_npart_cell[cx], n);
+    //  std::cout << "\t" << "occ: " << A.mpi_rank_dat->s_npart_cell[cx] << std::endl;
+    //}
+    //std::cout << "max occ: " << m << " min occ: " << n << std::endl;
+
 
     sycl_target.queue
         .submit([&](sycl::handler &cgh) {
@@ -104,62 +130,46 @@ inline void global_move_driver(){
   };
 
   REAL T = 0.0;
-  auto lambda_test = [&] {
-    // for all cells
-    for (int cellx = 0; cellx < cell_count; cellx++) {
-      auto P = A[Sym<REAL>("P")]->cell_dat.get_cell(cellx);
-      auto P_ORIG = A[Sym<REAL>("P_ORIG")]->cell_dat.get_cell(cellx);
-      auto V = A[Sym<REAL>("V")]->cell_dat.get_cell(cellx);
+ 
+  pbc.execute();
+  mesh_heirarchy_global_map.execute();
+  A.global_move();
+  ccb.execute();
+  A.cell_move();  
 
-      const int nrow = P->nrow;
+  MPI_Barrier(sycl_target.comm_pair.comm_parent);
+  if (rank == 0){
+    std::cout << "Particles Distributed..." << std::endl;
+  }
 
-      // for each dimension
-      for (int dimx = 0; dimx < ndim; dimx++) {
+  std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
 
-        // for each particle
-        for (int px = 0; px < nrow; px++) {
-          // read the original position of the particle and compute the correct
-          // current position based on the time T and velocity on the particle
-          const REAL P_correct_abs = (*P_ORIG)[dimx][px] + T * (*V)[dimx][px];
-          // map the absolute position back into the periodic domain
+  for (int stepx = 0; stepx < Nsteps; stepx++) {
 
-          const REAL extent = mesh.global_extents[dimx];
-          const REAL P_correct =
-              std::fmod(std::fmod(P_correct_abs, extent) + extent, extent);
-
-          const REAL P_to_test = (*P)[dimx][px];
-
-          const REAL err0 = ABS(P_correct - P_to_test);
-          // case where P_correct is at 0 and P_to_test is at extent - which is
-          // the same point in the periodic mapping
-          const REAL err1 = ABS(err0 - extent);
-
-          ASSERT_TRUE(((err0 <= tol) || (err1 <= tol)));
-
-          // check that the particle position is actually owned by this MPI
-          // rank
-          const int particle_cell =
-              ((REAL)(P_to_test * mesh.inverse_cell_width_fine));
-          ASSERT_TRUE(particle_cell >= mesh.cell_starts[dimx]);
-          ASSERT_TRUE(particle_cell < mesh.cell_ends[dimx]);
-        }
-      }
-    }
-  };
-
-  for (int testx = 0; testx < Ntest; testx++) {
     pbc.execute();
     mesh_heirarchy_global_map.execute();
     A.global_move();
-    // would normally bin into local cells here
-    // then move particles between cells and compress
-
-    lambda_test();
+    ccb.execute();
+    A.cell_move();
 
     lambda_advect();
 
     T += dt;
+    
+    if( (stepx % 100 == 0) && (rank == 0)) {
+      std::cout << stepx << std::endl;
+    }
   }
+
+  std::chrono::high_resolution_clock::time_point time_end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_taken = time_end - time_start;
+  const double time_taken_double = (double) time_taken.count();
+  
+  if (rank == 0){
+    std::cout << time_taken_double / Nsteps << std::endl;
+  }
+
+
   mesh.free();
 
 }
@@ -178,5 +188,5 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  return err;
+  return 0;
 }
