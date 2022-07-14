@@ -10,11 +10,11 @@ using namespace NESO::Particles;
 inline void global_move_driver(){
   const int ndim = 2;
   std::vector<int> dims(ndim);
-  dims[0] = 8;
-  dims[1] = 8;
+  dims[0] = 16;
+  dims[1] = 16;
 
   const double cell_extent = 1.0;
-  const int subdivision_order = 2;
+  const int subdivision_order = 3;
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order);
 
@@ -40,7 +40,8 @@ inline void global_move_driver(){
   const int rank = sycl_target.comm_pair.rank_parent;
 
   const int N = 100000;
-  const int Nsteps = 1024;
+  const int Nsteps_warmup = 1024;
+  const int Nsteps = 2048;
   const REAL dt = 0.001;
   const int cell_count = domain.mesh.get_cell_count();
 
@@ -135,6 +136,24 @@ inline void global_move_driver(){
   if (rank == 0){
     std::cout << "Particles Distributed..." << std::endl;
   }
+
+  for (int stepx = 0; stepx < Nsteps_warmup; stepx++) {
+
+    pbc.execute();
+    mesh_heirarchy_global_map.execute();
+    A.global_move();
+    ccb.execute();
+    A.cell_move();
+
+    lambda_advect();
+
+    T += dt;
+    
+    if( (stepx % 100 == 0) && (rank == 0)) {
+      std::cout << stepx << std::endl;
+    }
+  }
+  sycl_target.profile_map.reset();
 
   std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
 
