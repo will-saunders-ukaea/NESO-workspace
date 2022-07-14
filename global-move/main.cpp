@@ -14,7 +14,7 @@ inline void global_move_driver(){
   dims[1] = 8;
 
   const double cell_extent = 1.0;
-  const int subdivision_order = 0;
+  const int subdivision_order = 2;
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order);
 
@@ -51,7 +51,7 @@ inline void global_move_driver(){
   auto positions =
       uniform_within_extents(N, ndim, mesh.global_extents, rng_pos);
   auto velocities = NESO::Particles::normal_distribution(
-      N, 3, 0.0, dims[0] * cell_extent, rng_vel);
+      N, 3, 0.0, 0.5, rng_vel);
 
   std::uniform_int_distribution<int> uniform_dist(
       0, sycl_target.comm_pair.size_parent - 1);
@@ -92,6 +92,8 @@ inline void global_move_driver(){
   CartesianCellBin ccb(sycl_target, mesh, A.position_dat, A.cell_id_dat);
 
   auto lambda_advect = [&] {
+
+    auto t0 = profile_timestamp();
     auto k_P = A[Sym<REAL>("P")]->cell_dat.device_ptr();
     auto k_V = A[Sym<REAL>("V")]->cell_dat.device_ptr();
     const auto k_ndim = ndim;
@@ -101,18 +103,9 @@ inline void global_move_driver(){
     const auto pl_stride = A.mpi_rank_dat->get_particle_loop_cell_stride();
     const auto pl_npart_cell = A.mpi_rank_dat->get_particle_loop_npart_cell();
 
-    //std::cout << "pl_iter_range: " << pl_iter_range << " pl_stride: " << pl_stride << std::endl;
-    //
-    //int m = 0;
-    //int n = N;
-    //for(int cx=0 ; cx < cell_count ; cx++){
-    //  m = MAX(A.mpi_rank_dat->s_npart_cell[cx], m);
-    //  n = MIN(A.mpi_rank_dat->s_npart_cell[cx], n);
-    //  std::cout << "\t" << "occ: " << A.mpi_rank_dat->s_npart_cell[cx] << std::endl;
-    //}
-    //std::cout << "max occ: " << m << " min occ: " << n << std::endl;
+    sycl_target.profile_map.inc("Advect", "Prepare", 1, profile_elapsed(t0, profile_timestamp()));
 
-
+    auto t1 = profile_timestamp();
     sycl_target.queue
         .submit([&](sycl::handler &cgh) {
           cgh.parallel_for<>(
@@ -127,6 +120,7 @@ inline void global_move_driver(){
               });
         })
         .wait_and_throw();
+    sycl_target.profile_map.inc("Advect", "Execute", 1, profile_elapsed(t0, profile_timestamp()));
   };
 
   REAL T = 0.0;
@@ -171,6 +165,10 @@ inline void global_move_driver(){
 
 
   mesh.free();
+  
+  if (rank == 0){
+    sycl_target.profile_map.print();
+  }
 
 }
 

@@ -26,6 +26,14 @@ else()
   set(HIPSYCL_TARGETS "omp")
 endif(NOT hipSYCL_FOUND)
 
+if( NESO_PARTICLES_DEVICE_TYPE STREQUAL CPU)
+  add_definitions(-DNESO_PARTICLES_DEVICE_TYPE_CPU)
+  message(STATUS "Using NESO_PARTICLES_DEVICE_TYPE_CPU")
+else()
+  add_definitions(-DNESO_PARTICLES_DEVICE_TYPE_GPU)
+  message(STATUS "Using NESO_PARTICLES_DEVICE_TYPE_GPU")
+endif()
+
 # hipsycl, trisycl and computecpp all define an "add_sycl_to_target" for the
 # compilation of a target
 if(NOT COMMAND add_sycl_to_target)
