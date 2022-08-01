@@ -14,7 +14,7 @@ inline void global_move_driver(){
   dims[1] = 16;
 
   const double cell_extent = 1.0;
-  const int subdivision_order = 3;
+  const int subdivision_order = 1;
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order);
 
@@ -39,7 +39,7 @@ inline void global_move_driver(){
 
   const int rank = sycl_target.comm_pair.rank_parent;
 
-  const int N = 100000;
+  const int N = 1000000;
   const int Nsteps_warmup = 1024;
   const int Nsteps = 2048;
   const REAL dt = 0.001;
@@ -127,6 +127,7 @@ inline void global_move_driver(){
   REAL T = 0.0;
  
   pbc.execute();
+
   mesh_heirarchy_global_map.execute();
   A.global_move();
   ccb.execute();
@@ -158,14 +159,32 @@ inline void global_move_driver(){
   std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
 
   for (int stepx = 0; stepx < Nsteps; stepx++) {
+    
+    auto t0 = profile_timestamp();
 
     pbc.execute();
-    mesh_heirarchy_global_map.execute();
-    A.global_move();
-    ccb.execute();
-    A.cell_move();
+    sycl_target.profile_map.inc("Main", "pbc", 1, profile_elapsed(t0, profile_timestamp()));
 
+    auto t1 = profile_timestamp();
+    mesh_heirarchy_global_map.execute();
+    sycl_target.profile_map.inc("Main", "mesh_heirarchy_global_map", 1, profile_elapsed(t1, profile_timestamp()));
+
+    auto t2 = profile_timestamp();
+    A.global_move();
+    sycl_target.profile_map.inc("Main", "global_move", 1, profile_elapsed(t2, profile_timestamp()));
+
+    auto t3 = profile_timestamp();
+    ccb.execute();
+    sycl_target.profile_map.inc("Main", "cell_bin", 1, profile_elapsed(t3, profile_timestamp()));
+
+    auto t4 = profile_timestamp();
+    A.cell_move();
+    sycl_target.profile_map.inc("Main", "cell_move", 1, profile_elapsed(t4, profile_timestamp()));
+
+    auto t5 = profile_timestamp();
     lambda_advect();
+    sycl_target.profile_map.inc("Main", "advect", 1, profile_elapsed(t5, profile_timestamp()));
+
 
     T += dt;
     
