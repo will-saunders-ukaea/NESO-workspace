@@ -39,7 +39,7 @@ inline void global_move_driver(){
 
   const int rank = sycl_target.comm_pair.rank_parent;
 
-  const int N = 1000000;
+  const int N = 100000;
   const int Nsteps_warmup = 1024;
   const int Nsteps = 2048;
   const REAL dt = 0.001;

@@ -14,7 +14,7 @@ inline void global_move_driver(){
   dims[1] = 16;
 
   const double cell_extent = 1.0;
-  const int subdivision_order = 3;
+  const int subdivision_order = 1;
   const int stencil_width = 1;
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order, stencil_width);
@@ -61,8 +61,6 @@ inline void global_move_driver(){
 
   ParticleSet initial_distribution(N, A.get_particle_spec());
 
-  // determine which particles should end up on which rank
-  std::map<int, std::vector<int>> mapping;
   for (int px = 0; px < N; px++) {
     for (int dimx = 0; dimx < ndim; dimx++) {
       initial_distribution[Sym<REAL>("P")][px][dimx] = positions[dimx][px];
@@ -75,7 +73,6 @@ inline void global_move_driver(){
     initial_distribution[Sym<INT>("ID")][px][0] = px;
     const auto px_rank = uniform_dist(rng_rank);
     initial_distribution[Sym<INT>("NESO_MPI_RANK")][px][0] = px_rank;
-    mapping[px_rank].push_back(px);
   }
 
 
