@@ -102,8 +102,9 @@ inline void hybrid_move_driver(const int N_total){
   auto lambda_advect = [&] {
 
     auto t0 = profile_timestamp();
+
     auto k_P = A[Sym<REAL>("P")]->cell_dat.device_ptr();
-    auto k_V = A[Sym<REAL>("V")]->cell_dat.device_ptr();
+    const auto k_V = A[Sym<REAL>("V")]->cell_dat.device_ptr();
     const auto k_ndim = ndim;
     const auto k_dt = dt;
 
@@ -112,19 +113,17 @@ inline void hybrid_move_driver(const int N_total){
     const auto pl_npart_cell = A.mpi_rank_dat->get_particle_loop_npart_cell();
 
     sycl_target.profile_map.inc("Advect", "Prepare", 1, profile_elapsed(t0, profile_timestamp()));
-
-    auto t1 = profile_timestamp();
     sycl_target.queue
         .submit([&](sycl::handler &cgh) {
           cgh.parallel_for<>(
               sycl::range<1>(pl_iter_range), [=](sycl::id<1> idx) {
-                const INT cellx = ((INT)idx) / pl_stride;
-                const INT layerx = ((INT)idx) % pl_stride;
-                if (layerx < pl_npart_cell[cellx]) {
-                  for (int dimx = 0; dimx < k_ndim; dimx++) {
-                    k_P[cellx][dimx][layerx] += k_V[cellx][dimx][layerx] * k_dt;
-                  }
+                NESO_PARTICLES_KERNEL_START
+                const INT cellx = NESO_PARTICLES_KERNEL_CELL;
+                const INT layerx = NESO_PARTICLES_KERNEL_LAYER;
+                for (int dimx = 0; dimx < k_ndim; dimx++) {
+                  k_P[cellx][dimx][layerx] += k_V[cellx][dimx][layerx] * k_dt;
                 }
+                NESO_PARTICLES_KERNEL_END
               });
         })
         .wait_and_throw();
