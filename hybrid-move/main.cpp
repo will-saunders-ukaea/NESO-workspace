@@ -187,7 +187,7 @@ inline void hybrid_move_driver(const int N_total){
   const double time_taken_double = (double) time_taken.count();
   
   if (rank == 0){
-    std::cout << time_taken_double / Nsteps << std::endl;
+    std::cout << "TIME TAKEN: " << time_taken_double << " PER STEP: " << time_taken_double / Nsteps << std::endl;
   }
 
 

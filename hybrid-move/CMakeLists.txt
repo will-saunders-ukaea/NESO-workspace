@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(
-  NESO-Particles
+  NESO-Workspace-hybrid-move
   VERSION 0.0.1
-  LANGUAGES CXX)
+  LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -15,6 +15,8 @@ endif()
 
 # find MPI
 find_package(MPI REQUIRED)
+find_package(NESO-PARTICLES REQUIRED)
+
 
 # Include hipSYCL
 find_package(hipSYCL 0.9.2 QUIET)
@@ -25,14 +27,6 @@ else()
   message(STATUS "hipsycl found")
   set(HIPSYCL_TARGETS "omp")
 endif(NOT hipSYCL_FOUND)
-
-if( NESO_PARTICLES_DEVICE_TYPE STREQUAL CPU)
-  add_definitions(-DNESO_PARTICLES_DEVICE_TYPE_CPU)
-  message(STATUS "Using NESO_PARTICLES_DEVICE_TYPE_CPU")
-else()
-  add_definitions(-DNESO_PARTICLES_DEVICE_TYPE_GPU)
-  message(STATUS "Using NESO_PARTICLES_DEVICE_TYPE_GPU")
-endif()
 
 # hipsycl, trisycl and computecpp all define an "add_sycl_to_target" for the
 # compilation of a target
@@ -56,7 +50,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 #add_compile_options(-O3)
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -DNDEBUG -Ofast")
+#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -DNDEBUG -Ofast")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -DNDEBUG -O3")
 message(STATUS ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
 
 
@@ -64,18 +59,16 @@ set(EXECUTABLE hybrid_move_bench)
 set(EXECUTABLE_SOURCE main.cpp)
 
 
-if(NOT NESO_PARTICLES_ROOT)
-  message(ERROR ": NESO_PARTICLES_ROOT is not defined.")
-endif()
-
 find_package(MPI REQUIRED)
 
 add_executable(${EXECUTABLE} ${EXECUTABLE_SOURCE})
 
-target_include_directories(${EXECUTABLE} PRIVATE ${NESO_PARTICLES_ROOT}/include
+target_include_directories(${EXECUTABLE} PRIVATE ${NESO_PARTICLES_INCLUDE_PATH}
                                                  ${MPI_CXX_INCLUDE_PATH})
 target_link_libraries(${EXECUTABLE} PRIVATE ${MPI_CXX_LINK_FLAGS}
-                                            ${MPI_CXX_LIBRARIES})
+                                            ${MPI_CXX_LIBRARIES}
+                                            ${NESO_PARTICLES_LIBRARIES}
+                                            ${NESO_PARTICLES_LINK_FLAGS})
 
 # define the test executable as a sycl target
 add_sycl_to_target(TARGET ${EXECUTABLE} SOURCES ${EXECUTABLE_SOURCE})
