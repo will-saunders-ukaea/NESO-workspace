@@ -9,21 +9,62 @@ using namespace cl;
 using namespace NESO::Particles;
 
 inline void hybrid_move_driver(const int N_total){
- 
 
 
-  MPI_Info info_null  = MPI_INFO_NULL;
+  int size, rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   
+  const int width = 2;
+  int N = 0, offset = 0;
+  const int start = width * rank;
 
+  std::vector<double> x;
+  x.reserve(width);
+  for(int ix=0 ; ix<width ; ix++){
+    x[ix] = (double) rank * width + ix;
+  }
+
+  
+  nprint("MARCO");
   hid_t plist_id = H5Pcreate(H5P_FILE_ACCESS);
-  H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD, info_null);
-
+  H5Pset_fapl_mpio(plist_id, MPI_COMM_WORLD, MPI_INFO_NULL);
   hid_t file_id = H5Fcreate("foo.h5", H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 
+  auto group_step = H5Gcreate(file_id, "Step#0", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  
+  hsize_t dims[1] = {width};
+  auto memspace = H5Screate_simple(1, dims, NULL);
+  MPICHK(
+    MPI_Allreduce(
+      &width, &N, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD
+    )
+  );
+  dims[0] = N;
+  auto filespace = H5Screate_simple(1, dims, NULL);
+  MPICHK(MPI_Scan(&width, &offset, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD));
+  offset -= width;
+  nprint("offset", offset);
+  hsize_t start_offset[1] = {static_cast<hsize_t>(offset)};
+  hsize_t counts[1] = {static_cast<hsize_t>(width)};
 
-  H5Pclose(plist_id);
+  H5Sselect_hyperslab(filespace, H5S_SELECT_SET, start_offset, NULL, counts, NULL);
+  auto dxpl = H5Pcreate(H5P_DATASET_XFER);
+  H5Pset_dxpl_mpio(dxpl, H5FD_MPIO_COLLECTIVE);
+
+
+  auto dset = H5Dcreate1(group_step, "x", H5T_NATIVE_DOUBLE, filespace, H5P_DEFAULT);
+  H5Dwrite(dset, H5T_NATIVE_DOUBLE, memspace, filespace, dxpl, x.data());
+  H5Dclose(dset);
+
+  H5Pclose(dxpl);
+  H5Sclose(filespace);
+  H5Sclose(memspace);
+  H5Gclose(group_step);
   H5Fclose(file_id);
+  H5Pclose(plist_id);
 
+  nprint("POLO");
   /*
   const int ndim = 2;
   std::vector<int> dims(ndim);
