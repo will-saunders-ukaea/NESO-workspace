@@ -149,7 +149,13 @@ inline void hybrid_move_driver(const int N_total) {
   if (rank == 0) {
     std::cout << N_total << " Particles Distributed..." << std::endl;
   }
-
+   
+  H5Part h5_part("trajectory.h5part",
+      A,
+      Sym<REAL>("P"),
+      Sym<INT>("CELL_ID"),
+      Sym<INT>("NESO_MPI_RANK")
+  );
   for (int stepx = 0; stepx < Nsteps_warmup; stepx++) {
 
     pbc.execute();
@@ -157,15 +163,16 @@ inline void hybrid_move_driver(const int N_total) {
     A.hybrid_move();
     cell_id_translation.execute();
     A.cell_move();
-
+    h5_part.write();
     lambda_advect();
-
+    
     T += dt;
 
     if ((stepx % 100 == 0) && (rank == 0)) {
       std::cout << stepx << std::endl;
     }
   }
+  h5_part.close();
   sycl_target.profile_map.reset();
 
   std::chrono::high_resolution_clock::time_point time_start =
