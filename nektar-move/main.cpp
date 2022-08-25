@@ -19,7 +19,8 @@ using namespace NESO::Particles;
 inline void hybrid_move_driver(const int N_total) {
 
   int argc = 2;
-  char *argv[2] = {"test_particle_geometry_interface", "unit_square_0_5.xml"};
+  char *argv[2] = {"test_particle_geometry_interface", 
+    "unit_square_0_5.xml"};
   //"unit_square_0_05.xml"};
 
   LibUtilities::SessionReaderSharedPtr session;
