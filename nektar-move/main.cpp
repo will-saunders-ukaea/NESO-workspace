@@ -16,12 +16,11 @@ using namespace Nektar::SolverUtils;
 using namespace Nektar::SpatialDomains;
 using namespace NESO::Particles;
 
-inline void hybrid_move_driver(const int N_total) {
+inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
 
   int argc = 2;
   char *argv[2] = {"test_particle_geometry_interface", 
-    "unit_square_0_5.xml"};
-  //"unit_square_0_05.xml"};
+    mesh_filename};
 
   LibUtilities::SessionReaderSharedPtr session;
   SpatialDomains::MeshGraphSharedPtr graph;
@@ -67,7 +66,7 @@ inline void hybrid_move_driver(const int N_total) {
 
   const int Nsteps_warmup = 1024;
   const int Nsteps = 2048;
-  const REAL dt = 0.001;
+  const REAL dt = 0.1;
   const int cell_count = domain.mesh.get_cell_count();
 
   if (rank == 0) {
@@ -219,12 +218,13 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  if (argc > 1) {
+  if (argc > 2) {
 
     std::string argv0 = std::string(argv[1]);
     const int N = std::stoi(argv0);
+    char * mesh_filename = argv[2];
 
-    hybrid_move_driver(N);
+    hybrid_move_driver(N, mesh_filename);
   }
 
   if (MPI_Finalize() != MPI_SUCCESS) {
