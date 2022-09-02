@@ -5,7 +5,7 @@ import pygmsh as gmsh
 
 
 
-lc = 0.05
+lc = 0.5
 E = 1.0
 
 
@@ -17,8 +17,9 @@ with gmsh.geo.Geometry() as geo:
         [0.0, E],
     ]
     , mesh_size=lc)
-
-    mesh = geo.generate_mesh(dim=2, algorithm=6)
+    geo.add_physical(square, "square")
+    #mesh = geo.generate_mesh(dim=2, algorithm=6)
+    mesh = geo.generate_mesh(dim=2)
 
     mesh.write("mesh.vtu")
-    gmsh.write("test.msh")
+    gmsh.write("mesh.msh")
