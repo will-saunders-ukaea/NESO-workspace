@@ -149,7 +149,7 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
   if (rank == 0) {
     std::cout << N_total << " Particles Distributed..." << std::endl;
   }
-   
+
   H5Part h5_part("trajectory.h5part",
       A,
       Sym<REAL>("P"),
@@ -163,7 +163,11 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
     A.hybrid_move();
     cell_id_translation.execute();
     A.cell_move();
-    h5_part.write();
+    
+    if(stepx % 20 == 0){
+     // h5_part.write();
+    }
+
     lambda_advect();
     
     T += dt;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2">
+        <VERTEX COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJxtlUtoE0EYx1ejtsaq0aRq6iutVWsf1rTpQ9tktVUvCvbgAz2lECE3Lxb0phVFROxBFFO1FfRg64OCIF7ajSC0IoSIL8RHolWIUCUXD+JBszP//WZnNnP5bffX+eabnf8QTeNjd++1RCLxXOd/5Q281maBt5MV6aZ9WX0sHM+WjU2Tnw0OfrzZ8Dad0lO3ro98iGXJu8CfLwfN+oZafw74MDJkzjcu9cnz54IDU2x940mHvP48sLkwHj2Ljt9vi4xW//5GvgSsKTP/Y9qxv1IwcoR5R3/zwc99BwrjO+anybvBk+9M/8bhF4CNr/ab3lB9GZgKsfoOv1AT41TL+bDqF4Fe99Svw0dz+vHLvX9musT3WwxefT9peuPxHdl7NPvIO/pfovgBn0nxfZfK3tG/V/E3Mv8KQ5yfDxw9+PXLscmc4as74y5/nSNfDtbXMq+HFb+saP/i/JYX7U/4FSDyac3XLe+36pQOs3wfOs3ySb4CrMrz++FqZfkkvxLE/bLWJ78K9CR4vmPd8vzVYLuX3S+j5Iq8/hqwUDzh/9EffsDzT34tiHw79hcAcT8c/VWCSv7JV4FK/smvA5X8k68GlfyTX6+JYcs/+Q1gzsXzP3KR5Zv8RvBphue//57sazT7yDvW36R45J98rewd+69TPPJPvh7cs5fne8bP8k2+AbwQ4vcj1in7zUX7F+fXWLQ/4bco/gV7kaT7EQQ/4fzPBWTfVKx+MD5uvWkG7flJBqLkQ8r8E0Pm9zGovxYwg/l/J2TfClr52+WR+2tTPPs9q+yh9dsVfzYj198Kmm+HC/njv1ei/jZb9yKfYnTYnqNiPtXvBIO4H1if6lsFrfvD+gj00DoRxWP/VN96sO4Xvh/V36548/luIEr1dyge50/1u6Td5g2cH9XvVjzfbJzq71Q88kf1/wMMfq8q</VERTEX>
+        <EDGE COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJx1llVXVVEURhEVFbFQUVH0SnktTGwFu7sD7Ba7uxW749/68s0H5xjnvnxj3nVW7LX32etUVPz/61OglQXKr6+0X4H2L1D8qgp4gJh4A1UP9kFiftVi4g4Ws+4a5aGuIaof+1DlJ98wMfGHi/Ebobqoo1ZM/pFi/Eapbn6jtQ76WRetkn1MtFL/j5U/ecdFWS9+9VHWS7/Gi+nDhCjrpY8NYtY9MUpfiTdJTH9LYvwmR+k3/W0Uk79JjF9zlH7Rn5ZoteytUe/3FNVHf8pR1s9+TxVzPqdFOeecg+li9mdGtE72mYqDvS3KeSHvLNWDfbb+p69zxDw/V/nYt3li6pwfZV/I067nOBcLopxrzvFCMed4kRi/xVHONed4iZhzvFSM3zLF5XwvF1PXCsXB3iEmfmeU94M8K6P1sq+Sfym6Wsz61kR5n4i3Vsx7tU6M3/oo7xnxN4h53zaK8dsUZZ2sY3OU95I+bYk2yL5VTP+3iVnHdtVBvB1R1sn7v1NMn3ZFWS/3wm4x694TLcu+V8x9sU+M3/4o9wf3xQEx9R4U43coSh/o32ExfTsSpT/E6VJ9rLc7Sr+4v46KOc/HoqUo99pxMf0+EW2T/aTiYD8V5f4j72nVg/2M/qevZ8U8f0752LfzYuq8IGb/L0bZL/JfijJ3uK97xNzXl8XMqSt6nnv8qph7/JqYeNf1PPf7DTH3+00x8W7pec7V7SjnDb87qoM5cVfMPL+nfMyP+2L8Higfc+WhGL9H0UbZHysuc+iJmO+Np4rLfHomxu+58jG3Xojxexltkf2V4jLnXov5XnqjuMy/t2L8epWPufhOjN/7aJPsHxSXOfpRzPfaJ8XtjH4W4/dF+Zi7X8X4fYs2y/5dcZnTP8R8T/5UXOb3LzF+v5WPuf5HjN/faFn2f8wpVBMA</EDGE>
+        <ELEMENT>
+            <T COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJxdk9k/FWAURQ2RjMmQTBmjSMbMVKYyhpBkSCL8/+9e1nqw78v6ffd+3zl7n7NvQcHjTyEsinMxfAJL4l4pfBr3i+NeGXwW9cphReixT2Wcq6JvNayBz0NPLXwB60JPfegqjXND1GsM3Z6t9xLqx376bYL6egWdtz70qZ9m2AL13QrboD6t0w5fw46o2wm7YDd0bj2h23nYpxfqWz/6tp4630Dn3gf1pV77OId++BY693dwADp39QzGvfdQP0NR90P48DwMR6D7GIVj0U8/7mU8fDgPdU9EXd/Z1/fuKffq+7H4/iOchFOwA07DGTgLzcUcnI96XXF/AS5C9/4p+n6G5uoLXAo95moZrsBVaI7W4Ff4DZqr9dClH/ewEfo3oXnYgvNx3zypy/luQ/e6A52ves3Jd7gL9WtO9bUH96G5/QEP4CE0t0fwJzyG5kq/6vwFzbl+nMMJNPfW08dvaA5PQ7d6zbN5OIPn0DxfwD/QnJjDy7j3F7qPq6j7D07F+RreQHP4H95GP/eprjvonvxfuNd7qE9zeB2/uyfz5l6tr44HWAotngAA</T>
+            <Q COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJxd0NsygmEcR2FX0Ix7UO7CLrsKFTpJ3UFpRxspkkSlEqG7dWB9J+s9eWb+M7+ZNe/W2v8rYBGvcRO3sYRlrGi3g1Ws4Y12u3iLOaxrt6eeBjYxhFH1tPBOu331tPFeuwP1HGJHu+Ae9HTxAcN4pJ5H7Gl3rJ4n7GsXU88VPmsXV88AX3ADE+oZ4qt2J+p5w5F2p+rJ4li7M/VM8B3XMameKc60S6lnjh/apdUT/OdCu3P1fOIXRvBCPUv81u5SPT/4q11GPXlcafcHfQM0YAAA</Q>
+        </ELEMENT>
+        <COMPOSITE>
+            <C ID="1"> T[0-30] </C>
+            <C ID="2"> Q[62-85] </C>
+            <C ID="3"> T[31-61] </C>
+            <C ID="100"> E[46,12,20,10,45] </C>
+            <C ID="200"> E[50,32,108,111,114,117,87,103] </C>
+            <C ID="300"> E[100,64,74,66,99] </C>
+            <C ID="400"> E[104,86,153,152,150,148,33,49] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1-3] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.2.0</NektarVersion>
+            <Timestamp>02-Sep-2022 12:24:28</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>Helm_mesh.orig.msh Helm_mesh.orig.xml </NekMeshCommandLine>
+    </Metadata>
+    <EXPANSIONS>
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[2]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[3]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+    </EXPANSIONS>
+</NEKTAR>
