@@ -64,17 +64,19 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
   MPICHK(MPI_Allreduce(&N, &N_check, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD));
   NESOASSERT(N_check == N_total, "Error creating particles");
 
-  const int Nsteps_warmup = 1024;
-  const int Nsteps = 2048;
-  const REAL dt = 0.1;
+  const int Nsteps_warmup = 200;
+  const int Nsteps = 200;
+  const REAL dt = 0.001;
   const int cell_count = domain.mesh.get_cell_count();
 
   if (rank == 0) {
     std::cout << "Starting..." << std::endl;
   }
 
+
+
   if (N > 0) {
-    auto positions = uniform_within_extents(N, ndim, extent, rng_pos);
+    auto positions = uniform_within_extents(N, ndim, pbc.global_extent, rng_pos);
     auto velocities =
         NESO::Particles::normal_distribution(N, 3, 0.0, 0.5, rng_vel);
     std::uniform_int_distribution<int> uniform_dist(
@@ -82,9 +84,9 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
     ParticleSet initial_distribution(N, A.get_particle_spec());
     for (int px = 0; px < N; px++) {
       for (int dimx = 0; dimx < ndim; dimx++) {
-        initial_distribution[Sym<REAL>("P")][px][dimx] = positions[dimx][px];
-        initial_distribution[Sym<REAL>("P_ORIG")][px][dimx] =
-            positions[dimx][px];
+        const double pos_orig = positions[dimx][px] + pbc.global_origin[dimx];
+        initial_distribution[Sym<REAL>("P")][px][dimx] = pos_orig;
+        initial_distribution[Sym<REAL>("P_ORIG")][px][dimx] = pos_orig;
       }
       for (int dimx = 0; dimx < 3; dimx++) {
         initial_distribution[Sym<REAL>("V")][px][dimx] = velocities[dimx][px];
@@ -148,7 +150,11 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
   MPI_Barrier(sycl_target.comm_pair.comm_parent);
   if (rank == 0) {
     std::cout << N_total << " Particles Distributed..." << std::endl;
+
+    std::cout << "TriCount: " << graph->GetAllTriGeoms().size() << std::endl;;
+    std::cout << "QuadCount: " << graph->GetAllQuadGeoms().size() << std::endl;;
   }
+
 
   H5Part h5_part("trajectory.h5part",
       A,
@@ -164,8 +170,8 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
     cell_id_translation.execute();
     A.cell_move();
     
-    if(stepx % 20 == 0){
-     // h5_part.write();
+    if(stepx % 2 == 0){
+     h5_part.write();
     }
 
     lambda_advect();
@@ -177,6 +183,10 @@ inline void hybrid_move_driver(const int N_total, char * mesh_filename) {
     }
   }
   h5_part.close();
+
+  if (rank == 0) {
+    sycl_target.profile_map.print();
+  }
   sycl_target.profile_map.reset();
 
   std::chrono::high_resolution_clock::time_point time_start =
