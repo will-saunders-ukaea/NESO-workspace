@@ -26,7 +26,7 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   extents[0] = 2;
   extents[1] = 2;
   extents[2] = 2;
-  std::vector<double> origin(ndim_space);
+  std::vector<double> origin(ndim_particles);
   origin[0] = -1.0;
   origin[1] = -1.0;
   origin[2] = 0.0;
