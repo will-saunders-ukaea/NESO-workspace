@@ -33,7 +33,7 @@ https://github.com/will-saunders-ukaea/NESO-workspace.git
 cd NESO-workspace/duplicate-domain-decomposition
 ```
 
-Configuring cmake depends on which SCYCL implementation/target you wish to use:
+Configuring cmake depends on which SYCL implementation/target you wish to use:
 
 ```
 # Intel DPCPP
