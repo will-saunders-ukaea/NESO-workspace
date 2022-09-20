@@ -38,7 +38,9 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   LocalDecompositionHMesh mesh(ndim_space, origin, extents, cell_count, MPI_COMM_SELF);
 
   // Create a NESO compute device on each rank
-  SYCLTarget sycl_target{0, mesh.get_comm()};
+  // The get_local_mpi call finds a local MPI rank to use for assigning GPUs to
+  // MPI ranks.
+  SYCLTarget sycl_target{0, mesh.get_comm(), get_local_mpi_rank(MPI_COMM_WORLD, 0)};
   
   // create a domain from the 2D rectangle on each rank. Note this is not
   // spatially decomposed.
