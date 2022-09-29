@@ -15,7 +15,9 @@ with gmsh.geo.Geometry() as geo:
     , mesh_size=lc)
     
     geo.add_physical(square, "square")
-    mesh = geo.generate_mesh(dim=2, algorithm=6)
+
+    # 6 is triangles
+    mesh = geo.generate_mesh(dim=2, algorithm=8)
 
     mesh.write(f"mesh_{lc}.vtu")
     gmsh.write(f"mesh_{lc}.msh")

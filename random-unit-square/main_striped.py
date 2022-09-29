@@ -38,7 +38,10 @@ with gmsh.geo.Geometry() as geo:
     geo.add_physical(stripes_triangles, "triangles")
     geo.add_physical(stripes_quads, "quads")
 
-    mesh = geo.generate_mesh(dim=2, algorithm=6)
+    geo.add_raw_code('Mesh.RecombinationAlgorithm=2;\n')
+
+    #mesh = geo.generate_mesh(dim=2, algorithm=8)
+    mesh = geo.generate_mesh(dim=2)
 
     import pdb; pdb.set_trace()
 

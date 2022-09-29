@@ -135,7 +135,7 @@ inline void hybrid_move_driver(const int N_total){
   NESOASSERT(N_check == N_total, "Error creating particles");
 
 
-  const int Nsteps_warmup = 1;
+  const int Nsteps_warmup = 200;
   const REAL dt = 0.1;
   const int cell_count = domain.mesh.get_cell_count();
 
