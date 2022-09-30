@@ -13,6 +13,7 @@
 
 #include "exponential_density.hpp"
 #include "function_evaluation.hpp"
+#include "function_projection.hpp"
 
 using namespace std;
 using namespace Nektar;
@@ -42,6 +43,7 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   ParticleSpec particle_spec{ParticleProp(Sym<REAL>("P"), ndim, true),
                              ParticleProp(Sym<REAL>("Q"), 1),
                              ParticleProp(Sym<REAL>("FUNC_EVALS"), 1),
+                             ParticleProp(Sym<REAL>("FUNC_EVALS_Q"), 1),
                              ParticleProp(Sym<INT>("CELL_ID"), 1, true),
                              ParticleProp(Sym<INT>("ID"), 1)};
 
@@ -206,19 +208,6 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   FieldEvaluate field_evaluate(d, A, cell_id_translation);
   field_evaluate.evaluate(Sym<REAL>("FUNC_EVALS"));
 
-  H5Part h5part("exp.h5part", A, 
-      Sym<REAL>("P"),
-      Sym<REAL>("Q"),
-      Sym<INT>("ID"),
-      Sym<INT>("NESO_MPI_RANK"),
-      Sym<REAL>("NESO_REFERENCE_POSITIONS"),
-      Sym<REAL>("FUNC_EVALS")
-  );
-  h5part.write();
-  h5part.close();
-
-  
-
   if (rank == 0) {
     std::cout << "Checking Eval..." << std::endl;
   }
@@ -253,6 +242,30 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   lambda_check_evals();
 
 
+  FieldProject field_project(d, A, cell_id_translation);
+  field_project.project(Sym<REAL>("Q"));
+
+  field_evaluate.evaluate(Sym<REAL>("FUNC_EVALS_Q"));
+
+
+  H5Part h5part("exp.h5part", A, 
+      Sym<REAL>("P"),
+      Sym<REAL>("Q"),
+      Sym<INT>("ID"),
+      Sym<INT>("NESO_MPI_RANK"),
+      Sym<REAL>("NESO_REFERENCE_POSITIONS"),
+      Sym<REAL>("FUNC_EVALS"),
+      Sym<REAL>("FUNC_EVALS_Q")
+  );
+  h5part.write();
+  h5part.close();
+
+
+
+
+
+//WriteVtkHeader <- explist
+//PhysEvaluateBasis?
 
 
 
