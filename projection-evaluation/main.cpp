@@ -138,19 +138,7 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
 	//	const Array< OneD, const NekDouble > &  	physvals 
 	//) 	
   
-  FieldEvaluate field_evaluate(d, A, cell_id_translation);
-  field_evaluate.evaluate(Sym<REAL>("FUNC_EVALS"));
 
-  H5Part h5part("exp.h5part", A, 
-      Sym<REAL>("P"),
-      Sym<REAL>("Q"),
-      Sym<INT>("ID"),
-      Sym<INT>("NESO_MPI_RANK"),
-      Sym<REAL>("NESO_REFERENCE_POSITIONS"),
-      Sym<REAL>("FUNC_EVALS")
-  );
-  h5part.write();
-  h5part.close();
 
 
   std::cout << "N quads local: " << graph->GetAllQuadGeoms().size() << std::endl;
@@ -161,7 +149,8 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   auto d_expansions = d.GetExp();
   std::cout << "N expansions: " << d_expansions->size() << std::endl;
 
-  for (int ex=0 ; ex<d_expansions->size() ; ex++){
+  //for (int ex=0 ; ex<d_expansions->size() ; ex++){
+  for (int ex=0 ; ex<1 ; ex++){
 
     auto de0 = (*d_expansions)[ex];
     const Array< OneD, const LibUtilities::BasisSharedPtr > de0_basis = de0->GetBase();
@@ -183,6 +172,88 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   // offset in coeffs for i^th expansion
   auto offset_4 = d.GetCoeff_Offset(4);
   nprint("offset_4", offset_4);
+
+  
+  // get the number of quadrature points over all elements
+  const int tot_points = d.GetTotPoints();
+  nprint("GetTotPoints:", tot_points);
+
+  Array<OneD, NekDouble> x = Array<OneD, NekDouble>(tot_points);
+  Array<OneD, NekDouble> y = Array<OneD, NekDouble>(tot_points);
+  Array<OneD, NekDouble> f = Array<OneD, NekDouble>(tot_points);
+
+  auto lambda_f = [&] (const NekDouble x, const NekDouble y) {
+    return 10.0 * (x - 0.25) * (x - 0.75) * (y - 0.2) * (y - 0.8);
+  };
+
+  d.GetCoords(x, y);
+  for(int pointx=0 ; pointx<tot_points ; pointx++){
+    f[pointx] = lambda_f(x[pointx], y[pointx]);
+  }
+  
+  Array<OneD, NekDouble> phys_f(tot_points);
+  Array<OneD, NekDouble> coeffs_f((unsigned) d.GetNcoeffs());
+  
+  
+  //Project onto expansion
+  d.FwdTrans(f, coeffs_f);
+
+  //Backward transform solution to get projected values
+  d.BwdTrans(coeffs_f, phys_f);
+
+  d.SetPhys(phys_f);
+
+  FieldEvaluate field_evaluate(d, A, cell_id_translation);
+  field_evaluate.evaluate(Sym<REAL>("FUNC_EVALS"));
+
+  H5Part h5part("exp.h5part", A, 
+      Sym<REAL>("P"),
+      Sym<REAL>("Q"),
+      Sym<INT>("ID"),
+      Sym<INT>("NESO_MPI_RANK"),
+      Sym<REAL>("NESO_REFERENCE_POSITIONS"),
+      Sym<REAL>("FUNC_EVALS")
+  );
+  h5part.write();
+  h5part.close();
+
+  
+
+  if (rank == 0) {
+    std::cout << "Checking Eval..." << std::endl;
+  }
+
+  auto lambda_check_evals = [&] {
+
+    Array<OneD, NekDouble> point(2);
+
+    double max_err = 0.0;
+
+    for (int cellx = 0; cellx < cell_count; cellx++) {
+
+      auto positions = A.position_dat->cell_dat.get_cell(cellx);
+      auto func_evals = A[Sym<REAL>("FUNC_EVALS")]->cell_dat.get_cell(cellx);
+
+      for (int rowx = 0; rowx < positions->nrow; rowx++) {
+
+        point[0] = (*positions)[0][rowx];
+        point[1] = (*positions)[1][rowx];
+        
+        const double eval_dat = (*func_evals)[0][rowx];
+        const double eval_correct = lambda_f(point[0], point[1]);
+        
+        const double err = ABS(eval_dat - eval_correct);
+        max_err = std::max(err, max_err);
+      }
+    }
+
+    nprint("max_err:", max_err);
+  };
+  
+  lambda_check_evals();
+
+
+
 
 
 // ExpList::SetupCoeffPhys

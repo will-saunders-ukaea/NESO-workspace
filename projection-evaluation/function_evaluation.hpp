@@ -7,6 +7,11 @@
 
 using namespace Nektar::LibUtilities;
 
+/**
+ *  Class to evaluate a Nektar++ field at a set of particle locations. It is
+ *  assumed that the reference coordinates for the particles have alreadt been
+ *  computed by NektarGraphLocalMapperT.
+ */
 template <typename T>
 class FieldEvaluate {
 
@@ -16,12 +21,22 @@ private:
   SYCLTarget &sycl_target;
   CellIDTranslation &cell_id_translation;
 
-  // map from geometry ids to expanions ids for the field
+  // map from Nektar++ geometry ids to Nektar++ expanions ids for the field
   std::map<int, int> geom_to_exp;
 
 public:
 
   ~FieldEvaluate(){};
+
+  /**
+   *  Construct new evaluation object. 
+   *
+   *  @param field Nektar++ field to evaluate at particle positions.
+   *  @param particle_group ParticleGroup with positions mapped by
+   *  NektarGraphLocalMapperT.
+   *  @param cell_id_translation CellIDTranslation used to map between NESO
+   *  cell ids and Nektar++ geometry object ids.
+   */
   FieldEvaluate(
     T &field,
     ParticleGroup &particle_group,
@@ -38,13 +53,22 @@ public:
     const int num_expansions = (*expansions).size();
     for(int ex=0 ; ex<num_expansions ; ex++){
       auto exp = (*expansions)[ex];
+      // The indexing in Nektar++ source suggests that ex is the important
+      // index if these do not match in future.
       NESOASSERT(ex == exp->GetElmtId(), "expected expansion id to match element id?");
       int geom_gid = exp->GetGeom()->GetGlobalID();
       this->geom_to_exp[geom_gid] = ex;
     }
 
   };
-
+  
+  /**
+   *  Evaluate the field at the particle locations and place the result in the
+   *  ParticleDat indexed by the passed symbol.
+   *
+   *  @param sym ParticleDat in the ParticleGroup of this object in which to
+   *  place the evaluations.
+   */
   template <typename U>
   inline void evaluate(
     Sym<U> sym
@@ -59,6 +83,8 @@ public:
     const int particle_ndim = ref_position_dat->ncomp;
   
     Array<OneD, NekDouble> local_coord(particle_ndim);
+
+    // Get the physvals from the Nektar++ field.
     auto global_physvals = this->field.GetPhys();
 
     CellDataT<U> output_tmp(this->sycl_target, nrow_max, ncol);
@@ -72,25 +98,32 @@ public:
                                             event_stack);
       event_stack.wait();
 
-      // Get the nektar++ element id that corresponds to this cell
+      // Get the nektar++ geometry id that corresponds to this NESO cell id
       const int nektar_geom_id = this->cell_id_translation.map_to_nektar[neso_cellx];
-      NESOASSERT(this->geom_to_exp.count(nektar_geom_id), "Could not find expansion id for geom id");
+
+      // Map from the geometry id to the expansion id for the field.
+      NESOASSERT(this->geom_to_exp.count(nektar_geom_id),
+          "Could not find expansion id for geom id");
       const int nektar_expansion_id = this->geom_to_exp[nektar_geom_id];
-      NESOASSERT(particle_ndim >= this->field.GetCoordim(nektar_expansion_id), "mismatch in coordinate size");
+      NESOASSERT(particle_ndim >= this->field.GetCoordim(nektar_expansion_id),
+          "mismatch in coordinate size");
 
       // Get the expansion object that corresponds to this expansion id
       auto nektar_expansion = this->field.GetExp(nektar_expansion_id);
 
-      // Get the physvals required to evaluate the function
+      // Get the physvals required to evaluate the function in the expansion
+      // object that corresponds to the nektar++ geom/NESO cell
       auto physvals = global_physvals + this->field.GetPhys_Offset(nektar_expansion_id);
 
       const int nrow = output_dat->cell_dat.nrow[neso_cellx];
       for(int rowx=0 ; rowx<nrow ; rowx++){
-
+        
+        // read the reference position from the particle
         for(int dimx=0 ; dimx<particle_ndim ; dimx++){
           local_coord[dimx] = ref_positions_tmp[dimx][rowx];
         }
-
+        
+        // evaluate the field at the reference position of the particle
         const U phys_eval = nektar_expansion->StdPhysEvaluate(local_coord, physvals);
 
         for(int dimx=0 ; dimx<ncol ; dimx++){
@@ -106,7 +139,5 @@ public:
 
 
 };
-
-
 
 #endif
