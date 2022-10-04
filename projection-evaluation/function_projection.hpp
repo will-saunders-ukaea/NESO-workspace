@@ -6,6 +6,43 @@
 #include <neso_particles.hpp>
 
 using namespace Nektar::LibUtilities;
+using namespace Nektar::SpatialDomains;
+using namespace Nektar::MultiRegions;
+
+template <typename T>
+inline void multiply_by_inverse_mass_matrix(
+  T & field,
+  const Array< OneD, const NekDouble > &inarray,
+  Array< OneD, NekDouble> &outarray
+){
+  field.MultiplyByInvMassMatrix(inarray, outarray);
+}
+
+
+template <>
+inline void multiply_by_inverse_mass_matrix(
+  DisContField &field,
+  const Array< OneD, const NekDouble > &inarray,
+  Array< OneD, NekDouble> &outarray
+){
+  field.MultiplyByElmtInvMass(inarray, outarray);
+
+    /*
+  auto expansions = field.GetExp();
+  const int num_expansions = (*expansions).size();
+  for(int ex=0 ; ex<num_expansions ; ex++){
+    auto exp = (*expansions)[ex];
+    const int exp_offset = field.GetCoeff_Offset(ex);
+    
+    exp->MultiplyByInvMassMatrix(
+      inarray + exp_offset, 
+      outarray + exp_offset
+    );
+  }
+    */
+}
+
+
 
 /**
  * TODO
@@ -140,11 +177,15 @@ public:
     }
     
     // input array then output array -> FAILS?
-    this->field.MultiplyByInvMassMatrix(global_phi, global_coeffs);
+    //this->field.MultiplyByInvMassMatrix(global_phi, global_coeffs);
+    multiply_by_inverse_mass_matrix(this->field, global_phi, global_coeffs);
     
     // set the coefficients on the function
-    //this->field.SetCoeffsArray(global_coeffs);
+    this->field.SetCoeffsArray(global_coeffs);
 
+    Array<OneD, NekDouble> global_phys(this->field.GetTotPoints());
+    this->field.BwdTrans(global_coeffs, global_phys);
+    this->field.SetPhys(global_phys);
   }
 
 

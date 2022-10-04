@@ -1,6 +1,7 @@
 #include "nektar_interface/particle_interface.hpp"
 #include <LibUtilities/BasicUtils/SessionReader.h>
 #include <MultiRegions/DisContField.h>
+#include <MultiRegions/ContField.h>
 #include <SolverUtils/Driver.h>
 #include <array>
 #include <cmath>
@@ -122,13 +123,14 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
                 const INT layerx = NESO_PARTICLES_KERNEL_LAYER;
                 const REAL x = k_P[cellx][0][layerx];
                 const REAL y = k_P[cellx][1][layerx];
-                const REAL exp_eval = two_over_sqrt_pi * exp(-(2.0 * ((x - 0.5)*(x - 0.5) + (y - 0.5)*(y - 0.5))));
+                const REAL exp_eval = two_over_sqrt_pi * exp(-(4.0 * ((x - 0.5)*(x - 0.5) + (y - 0.5)*(y - 0.5))));
                 k_Q[cellx][0][layerx] = exp_eval * reweight;
                 NESO_PARTICLES_KERNEL_END
               });
         })
         .wait_and_throw();
   };
+
 
   lambda_set_exp_weights();
   
@@ -196,13 +198,12 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   Array<OneD, NekDouble> phys_f(tot_points);
   Array<OneD, NekDouble> coeffs_f((unsigned) d.GetNcoeffs());
   
-  
+
+  /*
   //Project onto expansion
   d.FwdTrans(f, coeffs_f);
-
   //Backward transform solution to get projected values
   d.BwdTrans(coeffs_f, phys_f);
-
   d.SetPhys(phys_f);
 
   FieldEvaluate field_evaluate(d, A, cell_id_translation);
@@ -240,12 +241,23 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
   };
   
   lambda_check_evals();
-
+  */
+  
+  // zero d
+  for(int pointx=0 ; pointx<tot_points ; pointx++){
+    f[pointx] = 0.0;
+  }
+  //Project onto expansion
+  d.FwdTrans(f, coeffs_f);
+  //Backward transform solution to get projected values
+  d.BwdTrans(coeffs_f, phys_f);
+  d.SetPhys(phys_f);
 
   FieldProject field_project(d, A, cell_id_translation);
   field_project.project(Sym<REAL>("Q"));
 
-  field_evaluate.evaluate(Sym<REAL>("FUNC_EVALS_Q"));
+  FieldEvaluate field_evaluate_q(d, A, cell_id_translation);
+  field_evaluate_q.evaluate(Sym<REAL>("FUNC_EVALS_Q"));
 
 
   H5Part h5part("exp.h5part", A, 
