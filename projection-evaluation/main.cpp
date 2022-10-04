@@ -15,6 +15,7 @@
 #include "exponential_density.hpp"
 #include "function_evaluation.hpp"
 #include "function_projection.hpp"
+#include "function_vtk_output.hpp"
 
 using namespace std;
 using namespace Nektar;
@@ -255,6 +256,8 @@ inline void hybrid_move_driver(const int N_total, int argc, char ** argv) {
 
   FieldProject field_project(d, A, cell_id_translation);
   field_project.project(Sym<REAL>("Q"));
+
+  write_vtk(d, "projected.vtu");
 
   FieldEvaluate field_evaluate_q(d, A, cell_id_translation);
   field_evaluate_q.evaluate(Sym<REAL>("FUNC_EVALS_Q"));
