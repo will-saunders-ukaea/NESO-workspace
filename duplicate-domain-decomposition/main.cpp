@@ -55,7 +55,7 @@ inline void duplicated_domain(const int N_total, const int N_steps){
                              ParticleProp(Sym<INT>("ID"), 1)};
   
   // Create a group of particles with the properties above.
-  ParticleGroup A(domain, particle_spec, sycl_target);
+  auto A = std::make_shared<ParticleGroup>(domain, particle_spec, sycl_target);
   
   // Create a new ensemble of particles on each rank such that the simulations
   // on each rank are independent (needs better seeding)
@@ -76,7 +76,7 @@ inline void duplicated_domain(const int N_total, const int N_steps){
       N_total, 3, 0.0, 0.5, rng_vel);
 
   // Allocate space to store the initial particle configuration
-  ParticleSet initial_distribution(N_total, A.get_particle_spec());
+  ParticleSet initial_distribution(N_total, A->get_particle_spec());
   
   // populate the initial particle configuration
   for (int px = 0; px < N_total; px++) {
@@ -90,7 +90,7 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   
   // Add the initial configuration to the ParticleGroup A. This is where the
   // particles are actually added to A
-  A.add_particles_local(initial_distribution);
+  A->add_particles_local(initial_distribution);
 
   MPICHK(MPI_Barrier(MPI_COMM_WORLD));
   if (rank == 0){
@@ -103,8 +103,8 @@ inline void duplicated_domain(const int N_total, const int N_steps){
     auto t0 = profile_timestamp();
     
     // these calls get the pointers to access the particle data in the kernel
-    auto k_P = A[Sym<REAL>("P")]->cell_dat.device_ptr();
-    const auto k_V = A[Sym<REAL>("V")]->cell_dat.device_ptr();
+    auto k_P = (*A)[Sym<REAL>("P")]->cell_dat.device_ptr();
+    const auto k_V = (*A)[Sym<REAL>("V")]->cell_dat.device_ptr();
     
     // explictly get copies/references to variables we want to access in the
     // kernel
@@ -112,9 +112,9 @@ inline void duplicated_domain(const int N_total, const int N_steps){
     const auto k_dt = dt;
     
     // get the variables required to loop over cells and particles in cells.
-    const auto pl_iter_range = A.mpi_rank_dat->get_particle_loop_iter_range();
-    const auto pl_stride = A.mpi_rank_dat->get_particle_loop_cell_stride();
-    const auto pl_npart_cell = A.mpi_rank_dat->get_particle_loop_npart_cell();
+    const auto pl_iter_range = A->mpi_rank_dat->get_particle_loop_iter_range();
+    const auto pl_stride = A->mpi_rank_dat->get_particle_loop_cell_stride();
+    const auto pl_npart_cell = A->mpi_rank_dat->get_particle_loop_npart_cell();
     
     // NESO-Particles profiling
     sycl_target->profile_map.inc("Advect", "Prepare", 1, 
