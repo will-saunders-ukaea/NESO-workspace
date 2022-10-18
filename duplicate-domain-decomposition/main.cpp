@@ -35,16 +35,18 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   // On each rank (aka communicator) create a 2D domain as described above such
   // that there are N copies of the domain in total where N is the number of
   // MPI ranks.
-  LocalDecompositionHMesh mesh(ndim_space, origin, extents, cell_count, MPI_COMM_SELF);
+  auto mesh = std::make_shared<LocalDecompositionHMesh>(
+      ndim_space, origin, extents, cell_count, MPI_COMM_SELF);
 
   // Create a NESO compute device on each rank
   // The get_local_mpi call finds a local MPI rank to use for assigning GPUs to
   // MPI ranks.
-  SYCLTarget sycl_target{0, mesh.get_comm(), get_local_mpi_rank(MPI_COMM_WORLD, 0)};
+  auto sycl_target = std::make_shared<SYCLTarget>(
+      0, mesh->get_comm(), get_local_mpi_rank(MPI_COMM_WORLD, 0));
   
   // create a domain from the 2D rectangle on each rank. Note this is not
   // spatially decomposed.
-  Domain domain(mesh);
+  auto domain = std::make_shared<Domain>(mesh);
   
   // Properties we want each particle to have
   ParticleSpec particle_spec{ParticleProp(Sym<REAL>("P"), ndim_particles, true),
@@ -69,7 +71,7 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   
   // Compute a set of initial positions and velocities
   auto positions =
-      uniform_within_extents(N_total, ndim_particles, mesh.global_extents.data(), rng_pos);
+      uniform_within_extents(N_total, ndim_particles, mesh->global_extents.data(), rng_pos);
   auto velocities = NESO::Particles::normal_distribution(
       N_total, 3, 0.0, 0.5, rng_vel);
 
@@ -115,11 +117,11 @@ inline void duplicated_domain(const int N_total, const int N_steps){
     const auto pl_npart_cell = A.mpi_rank_dat->get_particle_loop_npart_cell();
     
     // NESO-Particles profiling
-    sycl_target.profile_map.inc("Advect", "Prepare", 1, 
+    sycl_target->profile_map.inc("Advect", "Prepare", 1, 
         profile_elapsed(t0, profile_timestamp()));
     
     // actually create and queue the advection loop/kernel
-    sycl_target.queue
+    sycl_target->queue
         .submit([&](sycl::handler &cgh) {
           cgh.parallel_for<>(
               sycl::range<1>(pl_iter_range), [=](sycl::id<1> idx) {
@@ -147,11 +149,11 @@ inline void duplicated_domain(const int N_total, const int N_steps){
         .wait_and_throw();
 
     // NESO-Particles profiling
-    sycl_target.profile_map.inc("Advect", "Execute", 1, 
+    sycl_target->profile_map.inc("Advect", "Execute", 1, 
         profile_elapsed(t0, profile_timestamp()));
   };
 
-  MPI_Barrier(sycl_target.comm_pair.comm_parent);
+  MPI_Barrier(sycl_target->comm_pair.comm_parent);
   if (rank == 0){
     std::cout << N_total << " Particles Distributed..." << std::endl;
   }
@@ -184,11 +186,11 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   
   // close the HDF5 file and free the mesh
   h5_part.close();
-  mesh.free();
+  mesh->free();
   
   // print some internal profiling information
   if (rank == 0){
-    sycl_target.profile_map.print();
+    sycl_target->profile_map.print();
   }
 
 }
