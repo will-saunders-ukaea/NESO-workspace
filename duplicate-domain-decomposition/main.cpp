@@ -9,7 +9,9 @@ using namespace cl;
 using namespace NESO::Particles;
 
 inline void duplicated_domain(const int N_total, const int N_steps){
+ 
   
+
   // Cell count in the actual domain particles live in.
   const int cell_count = 20*20;
 
@@ -43,7 +45,10 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   // MPI ranks.
   auto sycl_target = std::make_shared<SYCLTarget>(
       0, mesh->get_comm(), get_local_mpi_rank(MPI_COMM_WORLD, 0));
-  
+ 
+
+
+
   // create a domain from the 2D rectangle on each rank. Note this is not
   // spatially decomposed.
   auto domain = std::make_shared<Domain>(mesh);
@@ -53,10 +58,12 @@ inline void duplicated_domain(const int N_total, const int N_steps){
                              ParticleProp(Sym<REAL>("V"), ndim_particles),
                              ParticleProp(Sym<INT>("CELL_ID"), 1, true),
                              ParticleProp(Sym<INT>("ID"), 1)};
-  
+ 
+
+
   // Create a group of particles with the properties above.
   auto A = std::make_shared<ParticleGroup>(domain, particle_spec, sycl_target);
-  
+
   // Create a new ensemble of particles on each rank such that the simulations
   // on each rank are independent (needs better seeding)
   int rank;
@@ -186,13 +193,17 @@ inline void duplicated_domain(const int N_total, const int N_steps){
   
   // close the HDF5 file and free the mesh
   h5_part.close();
-  mesh->free();
-  
+
   // print some internal profiling information
   if (rank == 0){
     sycl_target->profile_map.print();
   }
 
+  A->free();
+  sycl_target->free();
+  mesh->free();
+
+  return;
 }
 
 int main(int argc, char **argv) {
