@@ -3,48 +3,60 @@
     xsi:noNamespaceSchemaLocation="http://www.nektar.info/schema/nektar.xsd">
 
     <EXPANSIONS>
-        <E COMPOSITE="C[1]" NUMMODES="2" FIELDS="u" TYPE="MODIFIED" />
+        <E COMPOSITE="C[1]" NUMMODES="3" TYPE="MODIFIED" FIELDS="rho" />
+        <E COMPOSITE="C[1]" NUMMODES="3" TYPE="MODIFIED" FIELDS="u" />
     </EXPANSIONS>
 
     <CONDITIONS>
 
         <SOLVERINFO>
-            <I PROPERTY="EQTYPE" VALUE="Poisson" />
-            <I PROPERTY="Projection" VALUE="DisContinuous" />
+            <I PROPERTY="EQTYPE" VALUE="PoissonPIC" />
+            <I PROPERTY="Projection" VALUE="Continuous" />
         </SOLVERINFO>
 
         <PARAMETERS>
             <P> Lambda = 0.0 </P>
+            <P> epsilon = -1.0 </P>
+            <P> num_particles_per_cell = 2000 </P>
+            <P> particle_time_step = 0.01 </P>
+            <P> particle_num_time_steps = 100 </P>
+            <P> particle_num_write_steps = 10 </P>
+            <P> particle_num_print_steps = 1 </P>
         </PARAMETERS>
 
         <VARIABLES>
             <V ID="0"> u </V>
+            <V ID="1"> rho </V>
         </VARIABLES>
 
         <BOUNDARYREGIONS>
-            <B ID="0"> C[100] </B>
-            <B ID="1"> C[200]  </B>
-            <B ID="2"> C[300] </B>
-            <B ID="3"> C[400] </B>
+            <B ID="1"> C[100] </B>
+            <B ID="2"> C[200]  </B>
+            <B ID="3"> C[300] </B>
+            <B ID="4"> C[400] </B>
         </BOUNDARYREGIONS>
 
         <BOUNDARYCONDITIONS>
-            <REGION REF="0">
-                <N VAR="u" VALUE="0.0" />
-            </REGION>
             <REGION REF="1">
-                <D VAR="u" VALUE="0.0" />
+                <P VAR="u" VALUE="[3]" />
+                <P VAR="rho" VALUE="[3]" />
             </REGION>
             <REGION REF="2">
-                <N VAR="u" VALUE="0.0" />
+                <P VAR="u" VALUE="[4]" />
+                <P VAR="rho" VALUE="[4]" />
             </REGION>
             <REGION REF="3">
-                <D VAR="u" VALUE="(2*y*y*y)-(3*y*y)+1" />
+                <P VAR="u" VALUE="[1]" />
+                <P VAR="rho" VALUE="[1]" />
+            </REGION>
+            <REGION REF="4">
+                <P VAR="u" VALUE="[2]" />
+                <P VAR="rho" VALUE="[2]" />
             </REGION>
         </BOUNDARYCONDITIONS>
 
         <FUNCTION NAME="Forcing">
-            <E VAR="u" VALUE="-2*((2*y*y*y)-(3*y*y)+1)+6*((1-(x*x))*((2*y)-1))" />
+            <E VAR="u" VALUE="x- 0.5" />
         </FUNCTION>
 
         <FUNCTION NAME="ExactSolution">
