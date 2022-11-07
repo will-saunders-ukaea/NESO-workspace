@@ -3,8 +3,8 @@
     xsi:noNamespaceSchemaLocation="http://www.nektar.info/schema/nektar.xsd">
 
     <EXPANSIONS>
-        <E COMPOSITE="C[1]" NUMMODES="3" TYPE="MODIFIED" FIELDS="rho" />
         <E COMPOSITE="C[1]" NUMMODES="3" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[1]" NUMMODES="3" TYPE="MODIFIED" FIELDS="rho" />
     </EXPANSIONS>
 
     <CONDITIONS>
@@ -17,14 +17,15 @@
         <PARAMETERS>
             <P> Lambda = 0.0 </P>
             <P> epsilon = -1.0 </P>
-            <P> num_particles_per_cell = 2000 </P>
-            <P> particle_time_step = 0.01 </P>
-            <P> particle_num_time_steps = 10000 </P>
+            <P> num_particles_per_cell = 500 </P>
+            <P> particle_time_step = 0.001 </P>
+            <P> particle_num_time_steps = 20000 </P>
             <P> particle_num_write_particle_steps = 20 </P>
-            <P> particle_num_write_field_steps = 0 </P>
-            <P> particle_num_print_steps = 20 </P>
-            <P> particle_distribution_position = 1 </P>
-            <P> particle_charge_density = 32.0 </P>
+            <P> particle_num_write_field_energy_steps = 20 </P>
+            <P> particle_num_write_field_steps = 20 </P>
+            <P> particle_num_print_steps = 40 </P>
+            <P> particle_distribution_position = 2 </P>
+            <P> particle_charge_density = 512.0 </P>
         </PARAMETERS>
 
         <VARIABLES>
