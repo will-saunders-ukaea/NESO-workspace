@@ -26,22 +26,7 @@ inline void multiply_by_inverse_mass_matrix(
   Array< OneD, NekDouble> &outarray
 ){
   field.MultiplyByElmtInvMass(inarray, outarray);
-
-    /*
-  auto expansions = field.GetExp();
-  const int num_expansions = (*expansions).size();
-  for(int ex=0 ; ex<num_expansions ; ex++){
-    auto exp = (*expansions)[ex];
-    const int exp_offset = field.GetCoeff_Offset(ex);
-    
-    exp->MultiplyByInvMassMatrix(
-      inarray + exp_offset, 
-      outarray + exp_offset
-    );
-  }
-    */
 }
-
 
 
 /**

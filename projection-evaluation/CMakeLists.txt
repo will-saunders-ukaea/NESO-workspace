@@ -78,3 +78,9 @@ target_link_libraries(
 
 # define the test executable as a sycl target
 add_sycl_to_target(TARGET ${EXECUTABLE} SOURCES ${EXECUTABLE_SOURCE})
+
+
+message(status ${NEKTAR++_DEFINITIONS})
+message(status ${NEKTAR++_LIBRARIES} ${NEKTAR++_TP_LIBRARIES} ${MPI_LIBRARIES}
+          ${NESO_PARTICLES_LIBRARIES} ${NESO_PARTICLES_LINK_FLAGS})
+message(status ${MPI_COMPILE_FLAGS})

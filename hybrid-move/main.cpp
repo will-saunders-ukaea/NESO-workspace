@@ -20,7 +20,7 @@ inline void hybrid_move_driver(const int N_total){
   CartesianHMesh mesh(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order, stencil_width);
 
-  SYCLTarget sycl_target{0, mesh.get_comm()};
+  SYCLTarget sycl_target(0, mesh.get_comm());
 
   auto cart_local_mapper = CartesianHMeshLocalMapper(sycl_target, mesh);
   Domain domain(mesh, cart_local_mapper);
@@ -31,7 +31,7 @@ inline void hybrid_move_driver(const int N_total){
                              ParticleProp(Sym<INT>("CELL_ID"), 1, true),
                              ParticleProp(Sym<INT>("ID"), 1)};
 
-  ParticleGroup A(domain, particle_spec, sycl_target);
+  ParticleGroup A(domain, particle_spec, *sycl_target);
 
   A.add_particle_dat(ParticleDat(sycl_target, ParticleProp(Sym<REAL>("FOO"), 3),
                                  domain.mesh.get_cell_count()));
@@ -78,7 +78,7 @@ inline void hybrid_move_driver(const int N_total){
     for (int dimx = 0; dimx < 3; dimx++) {
       initial_distribution[Sym<REAL>("V")][px][dimx] = velocities[dimx][px];
     }
-    initial_distribution[Sym<INT>("CELL_ID")][px][0] = 0;
+    initial_distribution[Sym<INT>("CELL_ID")][px][0] = px % cell_count;
     initial_distribution[Sym<INT>("ID")][px][0] = px;
     const auto px_rank = uniform_dist(rng_rank);
     initial_distribution[Sym<INT>("NESO_MPI_RANK")][px][0] = px_rank;
