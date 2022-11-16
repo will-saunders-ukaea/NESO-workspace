@@ -60,14 +60,24 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     dt = session.get_parameter("particle_time_step")
     assert dt > 0.0
 
+    Lx = 1.0
+    Ly = 0.01
+    L = Lx
+    M = 1
+    
+    volume = Lx * Ly
+    n = session.get_parameter("particle_number_density")
+    print("n", n, (16.0 * math.pi * math.pi / (3)))
+    num_particles_physical = n * volume
 
     num_particles_total = session.get_parameter("num_particles_total")
-    q = session.get_parameter("particle_charge_density") / num_particles_total
+    particle_charge_density = session.get_parameter("particle_charge_density")
+    q = particle_charge_density * volume / num_particles_physical
+
     print("q", q)
     m = 1.0;
     print("m", m)
-    n = session.get_parameter("particle_number_density")
-    print("n", n, (16.0 * math.pi * math.pi / (3)))
+
     epsilon_0 = 1.0
     print("epsilon_0", epsilon_0)
     v_b = session.get_parameter("particle_initial_velocity")
@@ -117,6 +127,9 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     print("PI_T/(2sqrt(2))          :", PI_T / (2.0 * math.sqrt(2)))
     print("(1/2) * sqrt(32pi**2/6)  :", 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6))
 
+
+    gamma_energy = 2 * gamma_max
+
     #gamma_max = 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6)
     print("gamma_max", gamma_max, 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6))
     
@@ -125,6 +138,15 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     print("w", w, 32 * math.pi**2 / (3 * num_particles_total) )
     nT = 32 * math.pi **2 / 3
     print("nT", nT)
+
+    n_general = v_b**2 * M**2 * (m * epsilon_0 / (q**2)) * (16 * math.pi **2 / (3 * (L ** 2)))
+    print("n_general", n_general)
+    
+    w_general = 2.0 * n_general * Lx * Ly
+    print("w_general (density):", w_general)
+    print("w_general:", w_general / num_particles_total)
+
+
 
     field_energy = h5py.File(sys.argv[2], "r")
     keys = sorted(field_energy.keys(), key=lambda x: int(x.split("#")[-1]))
@@ -172,21 +194,16 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     dx = potential_x[potential_energy_max_index] - potential_x[potential_energy_min_index]
     dy = np.log(potential_y[potential_energy_max_index]) - np.log(potential_y[potential_energy_min_index])
 
-    print("Gradient:", dy / dx)
-    print("WARNING +-1 in X AND Y")
-    
+    print("Gradient                 :", dy / dx)
+    print("gamma_energy (theory)    :", gamma_energy)
 
     tx0 = potential_x[potential_energy_min_index]
     tx1 = potential_x[potential_energy_max_index]
 
-
-    print("WARNING gamma *= sqrt(2)")
-    gamma_max *= math.sqrt(2)
-    iy0 = math.exp(gamma_max * tx0)
-    iy1 = math.exp(gamma_max * tx1)
+    iy0 = math.exp(gamma_energy * tx0)
+    iy1 = math.exp(gamma_energy * tx1)
 
     ishift = 1.0
-
 
     # plot field energy and potential energy
     fig = plt.figure(figsize=(8, 6))
