@@ -44,25 +44,12 @@ class Session:
         return t(dt)
 
 
-if __name__ == "__main__":
+def get_gamma_and_validate(session, two_stream):
 
-    if (len(sys.argv) < 3) or ("--help" in sys.argv) or ("-h" in sys.argv):
-        print(
-            """
-Plots energies from electrostatic PIC. Call with:
-
-python3 plot_energy.py input.xml electrostatic_two_stream.h5
-
-"""
-        )
-        quit()
-
-    session = Session(sys.argv[1])
-    dt = session.get_parameter("particle_time_step")
-    assert dt > 0.0
-
-    Lx = 1.0
-    Ly = 0.01
+    Lx = two_stream["global_data"]["L_x"][0]
+    Ly = two_stream["global_data"]["L_y"][0]
+    print("Lx", Lx)
+    print("Ly", Ly)
     L = Lx
     M = 1
 
@@ -74,10 +61,14 @@ python3 plot_energy.py input.xml electrostatic_two_stream.h5
     num_particles_total = session.get_parameter("num_particles_total")
     particle_charge_density = session.get_parameter("particle_charge_density")
     q = particle_charge_density * volume / num_particles_physical
-
     print("q", q)
+
+    q_sim = two_stream["global_data"]["q"][0]
+    assert abs(q_sim - q) < 1.0e-14
     m = 1.0
     print("m", m)
+    m_sim = two_stream["global_data"]["m"][0]
+    assert abs(m - m_sim) < 1.0e-14
 
     epsilon_0 = 1.0
     print("epsilon_0", epsilon_0)
@@ -161,7 +152,14 @@ python3 plot_energy.py input.xml electrostatic_two_stream.h5
     print("w_general (density):", w_general)
     print("w_general:", w_general / num_particles_total)
 
-    two_stream = h5py.File(sys.argv[2], "r")
+    w_sim = two_stream["global_data"]["w"][0]
+    assert abs(w_sim - w_general / num_particles_total) < 1.0e-14
+
+    return gamma_energy
+
+
+def plot_figures(session, two_stream, gamma_energy):
+
     step_data = two_stream["step_data"]
     step_keys = sorted(step_data.keys(), key=lambda x: int(x))
 
@@ -171,8 +169,10 @@ python3 plot_energy.py input.xml electrostatic_two_stream.h5
     potential_y = np.zeros((N,))
     kinetic_y = np.zeros((N,))
 
+    dt = session.get_parameter("particle_time_step")
+    assert dt > 0.0
+
     for keyi, keyx in enumerate(step_keys):
-        print(keyx)
         t = dt * int(keyx)
         x[keyi] = t
         y[keyi] = step_data[keyx]["field_energy"][0]
@@ -336,3 +336,23 @@ python3 plot_energy.py input.xml electrostatic_two_stream.h5
     )
 
     fig.savefig("all_energy.pdf", bbox_inches="tight")
+
+
+if __name__ == "__main__":
+
+    if (len(sys.argv) < 3) or ("--help" in sys.argv) or ("-h" in sys.argv):
+        print(
+            """
+Plots energies from electrostatic PIC. Call with:
+
+python3 plot_energy.py input.xml electrostatic_two_stream.h5
+
+"""
+        )
+        quit()
+
+    session = Session(sys.argv[1])
+    two_stream = h5py.File(sys.argv[2], "r")
+
+    gamma_energy = get_gamma_and_validate(session, two_stream)
+    plot_figures(session, two_stream, gamma_energy)
