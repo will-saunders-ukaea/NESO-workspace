@@ -28,14 +28,28 @@ plt.rcParams.update(params)
 
 
 class Session:
+
     def __init__(self, filename):
+        """
+        Helper class to read XML Nektar++ session file.
+        
+        :param: filename Nektar++ session file to read.
+        """
         self.xml_tree = ET.parse(filename)
         self.xml_root = self.xml_tree.getroot()
         self.parameters = (
             self.xml_root.find("CONDITIONS").find("PARAMETERS").findall("P")
         )
+    
 
     def get_parameter(self, name, t=float):
+        """
+        Get value from session file and cast to type.
+
+        :param: name Name of value to extract.
+        :param: t Type to cast to.
+        :returns: Value cast to type.
+        """
         dt = -1
         for px in self.parameters:
             text = [tx for tx in px.itertext()][0].strip()
@@ -45,6 +59,11 @@ class Session:
 
 
 def get_gamma_and_validate(session, two_stream):
+    """
+    Compute the expected gradient of the energy growth (in logspace). Computes
+    the expected parameter values for the simualtion and checks these
+    parameters against the ones computed by the simulation.
+    """
 
     Lx = two_stream["global_data"]["L_x"][0]
     Ly = two_stream["global_data"]["L_y"][0]
@@ -159,37 +178,47 @@ def get_gamma_and_validate(session, two_stream):
 
 
 def plot_figures(session, two_stream, gamma_energy):
+    """
+    Plot the 
+    """
 
     step_data = two_stream["step_data"]
     step_keys = sorted(step_data.keys(), key=lambda x: int(x))
 
     N = len(step_keys)
+    # The x arrays are all time in these plots.
     x = np.zeros((N,))
-    y = np.zeros((N,))
+    # The y arrays are all energies in these plots.
+    field_y = np.zeros((N,))
     potential_y = np.zeros((N,))
     kinetic_y = np.zeros((N,))
-
+    
+    # time step size
     dt = session.get_parameter("particle_time_step")
     assert dt > 0.0
-
+    
+    # for each energy type extract the values from the hdf5 file
     for keyi, keyx in enumerate(step_keys):
         t = dt * int(keyx)
         x[keyi] = t
-        y[keyi] = step_data[keyx]["field_energy"][0]
+        field_y[keyi] = step_data[keyx]["field_energy"][0]
         potential_y[keyi] = 0.5 * step_data[keyx]["potential_energy"][0]
         kinetic_y[keyi] = step_data[keyx]["kinetic_energy"][0]
-
+    # these time values are all identical
     potential_x = x
     kinetic_x = x
-
+    
+    # compute the total energy at each timestep
     total_x = kinetic_x
     total_y = potential_y + kinetic_y
-
+    
+    # compute the energy difference between the start and end of the simualtion
     total_initial = total_y[0]
     total_end = total_y[-1]
-
     print("Energy diff:", abs(total_initial - total_end) / abs(total_initial))
-
+    
+    # assume that the linear (in log space) part we want the gradient of is
+    # between the global max and global min
     potential_energy_max_index = np.argmax(potential_y)
     potential_energy_min_index = np.argmin(potential_y)
 
@@ -203,13 +232,13 @@ def plot_figures(session, two_stream, gamma_energy):
 
     print("Gradient                 :", dy / dx)
     print("gamma_energy (theory)    :", gamma_energy)
-
+    
+    # compute the start, end points of a straight line (in log space) that
+    # matches the theory for the energy growth
     tx0 = potential_x[potential_energy_min_index]
     tx1 = potential_x[potential_energy_max_index]
-
     iy0 = math.exp(gamma_energy * tx0)
     iy1 = math.exp(gamma_energy * tx1)
-
     ishift = 1.0
 
     # plot field energy and potential energy
@@ -224,9 +253,9 @@ def plot_figures(session, two_stream, gamma_energy):
 
     ax.semilogy(
         x,
-        y,
+        field_y,
         color=field_colour,
-        label="Field Energy",
+        #label="Field Energy",
         linewidth=2,
         markersize=8,
         base=np.e,
@@ -235,7 +264,7 @@ def plot_figures(session, two_stream, gamma_energy):
         potential_x,
         potential_y,
         color=potential_colour,
-        label="Potential Energy",
+        #label="Potential Energy",
         linewidth=2,
         markersize=8,
         base=np.e,
@@ -250,7 +279,7 @@ def plot_figures(session, two_stream, gamma_energy):
             potential_y[potential_energy_max_index],
         ],
         color="r",
-        label="Fit",
+        label=f"Fitted gamma: ${dy/dx}$",
         linewidth=2,
         markersize=8,
         linestyle="--",
@@ -261,12 +290,13 @@ def plot_figures(session, two_stream, gamma_energy):
         [tx0, tx1],
         [ishift * iy0, ishift * iy1],
         color="k",
-        label="Fit",
+        label=f"Theory gamma: ${gamma_energy}$",
         linewidth=2,
         markersize=8,
         linestyle="--",
         base=np.e,
     )
+    ax2.legend()
 
     # ax.set_yscale("log")
     # ax2.set_yscale("log")
