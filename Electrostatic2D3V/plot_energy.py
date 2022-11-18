@@ -31,7 +31,9 @@ class Session:
     def __init__(self, filename):
         self.xml_tree = ET.parse(filename)
         self.xml_root = self.xml_tree.getroot()
-        self.parameters = self.xml_root.find("CONDITIONS").find("PARAMETERS").findall("P")
+        self.parameters = (
+            self.xml_root.find("CONDITIONS").find("PARAMETERS").findall("P")
+        )
 
     def get_parameter(self, name, t=float):
         dt = -1
@@ -42,20 +44,19 @@ class Session:
         return t(dt)
 
 
-
 if __name__ == "__main__":
 
-    if (len(sys.argv) < 5) or ("--help" in sys.argv) or ("-h" in sys.argv):
+    if (len(sys.argv) < 3) or ("--help" in sys.argv) or ("-h" in sys.argv):
         print(
             """
 Plots energies from electrostatic PIC. Call with:
 
-python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_energy.h5
+python3 plot_energy.py input.xml electrostatic_two_stream.h5
 
 """
         )
         quit()
-    
+
     session = Session(sys.argv[1])
     dt = session.get_parameter("particle_time_step")
     assert dt > 0.0
@@ -64,7 +65,7 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     Ly = 0.01
     L = Lx
     M = 1
-    
+
     volume = Lx * Ly
     n = session.get_parameter("particle_number_density")
     print("n", n, (16.0 * math.pi * math.pi / (3)))
@@ -75,23 +76,29 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     q = particle_charge_density * volume / num_particles_physical
 
     print("q", q)
-    m = 1.0;
+    m = 1.0
     print("m", m)
 
     epsilon_0 = 1.0
     print("epsilon_0", epsilon_0)
     v_b = session.get_parameter("particle_initial_velocity")
     print("v_b", v_b)
-    PI_s = math.sqrt((q*q*n) / (m * epsilon_0))
+    PI_s = math.sqrt((q * q * n) / (m * epsilon_0))
     print("PI_s", PI_s)
 
-    
     # sqrt(3)/2 = v_b * k_parallel / PI_s
     k_parallel = math.sqrt(3) * 0.5 * PI_s / v_b
-    print("k_parallel", k_parallel, "v_b k_par,max", v_b * k_parallel, "Pi_s sqrt(3)/2", PI_s * math.sqrt(3)/2)
+    print(
+        "k_parallel",
+        k_parallel,
+        "v_b k_par,max",
+        v_b * k_parallel,
+        "Pi_s sqrt(3)/2",
+        PI_s * math.sqrt(3) / 2,
+    )
     u = v_b * k_parallel / PI_s
-    x_minus = (u*u + 1.0 - (4.0 * u * u + 1.0)**0.5)**0.5
-    x_plus = (u*u + 1.0 + (4.0 * u * u + 1.0)**0.5)**0.5
+    x_minus = (u * u + 1.0 - (4.0 * u * u + 1.0) ** 0.5) ** 0.5
+    x_plus = (u * u + 1.0 + (4.0 * u * u + 1.0) ** 0.5) ** 0.5
 
     x_mm = -x_minus
     x_pm = x_minus
@@ -102,13 +109,13 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     print("x+-", x_pm)
     print("x++", x_pp)
     print("x-+", x_mp)
-    print("sqrt(15)/2", 15**0.5 / 2)
+    print("sqrt(15)/2", 15 ** 0.5 / 2)
 
     omega_mm = x_mm * PI_s
     omega_pm = x_pm * PI_s
     omega_pp = x_pp * PI_s
     omega_mp = x_mp * PI_s
- 
+
     print("omega_mm", omega_mm)
     print("omega_pm", omega_pm)
     print("omega_pp", omega_pp)
@@ -117,69 +124,64 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     print("PI_s                     :", PI_s)
     print("PI_s: v_b 4pi/sqrt(3)    :", v_b * 4.0 * math.pi / math.sqrt(3))
     print("n                        :", n)
-    print("v_b^2 (m/q^2) 16 pi^2/3  :", v_b*v_b * (m/(q*q)) * 16 * math.pi**2  / 3.0)
-
+    print(
+        "v_b^2 (m/q^2) 16 pi^2/3  :",
+        v_b * v_b * (m / (q * q)) * 16 * math.pi ** 2 / 3.0,
+    )
 
     gamma_max = PI_s / 2
     PI_T = PI_s * math.sqrt(2)
-    print("PI_s/2                   :", PI_s/2)
+    print("PI_s/2                   :", PI_s / 2)
     print("v_b M 2pi/sqrt(3)        :", v_b * 2.0 * math.pi / math.sqrt(3))
     print("PI_T/(2sqrt(2))          :", PI_T / (2.0 * math.sqrt(2)))
-    print("(1/2) * sqrt(32pi**2/6)  :", 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6))
-
+    print(
+        "(1/2) * sqrt(32pi**2/6)  :",
+        0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6),
+    )
 
     gamma_energy = 2 * gamma_max
 
-    #gamma_max = 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6)
+    # gamma_max = 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6)
     print("gamma_max", gamma_max, 0.5 * math.sqrt(((32 * (math.pi ** 2))) / 6))
-    
-    
-    w = v_b**2 * 16 * (math.pi**2 / 3) * (2 / num_particles_total)
-    print("w", w, 32 * math.pi**2 / (3 * num_particles_total) )
-    nT = 32 * math.pi **2 / 3
+
+    w = v_b ** 2 * 16 * (math.pi ** 2 / 3) * (2 / num_particles_total)
+    print("w", w, 32 * math.pi ** 2 / (3 * num_particles_total))
+    nT = 32 * math.pi ** 2 / 3
     print("nT", nT)
 
-    n_general = v_b**2 * M**2 * (m * epsilon_0 / (q**2)) * (16 * math.pi **2 / (3 * (L ** 2)))
+    n_general = (
+        v_b ** 2
+        * M ** 2
+        * (m * epsilon_0 / (q ** 2))
+        * (16 * math.pi ** 2 / (3 * (L ** 2)))
+    )
     print("n_general", n_general)
-    
+
     w_general = 2.0 * n_general * Lx * Ly
     print("w_general (density):", w_general)
     print("w_general:", w_general / num_particles_total)
 
+    two_stream = h5py.File(sys.argv[2], "r")
+    step_data = two_stream["step_data"]
+    step_keys = sorted(step_data.keys(), key=lambda x: int(x))
 
-
-    field_energy = h5py.File(sys.argv[2], "r")
-    keys = sorted(field_energy.keys(), key=lambda x: int(x.split("#")[-1]))
-    N = len(keys)
+    N = len(step_keys)
     x = np.zeros((N,))
     y = np.zeros((N,))
-    for keyi, keyx in enumerate(keys):
-        x[keyi] = dt * int(keyx.split("#")[-1])
-        y[keyi] = field_energy[keyx]["field_energy"][0]
+    potential_y = np.zeros((N,))
+    kinetic_y = np.zeros((N,))
 
-    potential_energy = h5py.File(sys.argv[3], "r")
-    potential_keys = sorted(
-        potential_energy.keys(), key=lambda x: int(x.split("#")[-1])
-    )
-    N_potential = len(potential_keys)
-    potential_x = np.zeros((N_potential,))
-    potential_y = np.zeros((N_potential,))
-    for keyi, keyx in enumerate(potential_keys):
-        potential_x[keyi] = dt * int(keyx.split("#")[-1])
-        potential_y[keyi] = 0.5 * potential_energy[keyx]["potential_energy"][0]
+    for keyi, keyx in enumerate(step_keys):
+        print(keyx)
+        t = dt * int(keyx)
+        x[keyi] = t
+        y[keyi] = step_data[keyx]["field_energy"][0]
+        potential_y[keyi] = 0.5 * step_data[keyx]["potential_energy"][0]
+        kinetic_y[keyi] = step_data[keyx]["kinetic_energy"][0]
 
-    kinetic_energy = h5py.File(sys.argv[4], "r")
-    kinetic_keys = sorted(
-        kinetic_energy.keys(), key=lambda x: int(x.split("#")[-1])
-    )
-    N_kinetic = len(kinetic_keys)
-    kinetic_x = np.zeros((N_kinetic,))
-    kinetic_y = np.zeros((N_kinetic,))
-    for keyi, keyx in enumerate(kinetic_keys):
-        kinetic_x[keyi] = dt * int(keyx.split("#")[-1])
-        kinetic_y[keyi] = kinetic_energy[keyx]["kinetic_energy"][0]
+    potential_x = x
+    kinetic_x = x
 
-    assert kinetic_x.shape == potential_x.shape
     total_x = kinetic_x
     total_y = potential_y + kinetic_y
 
@@ -187,12 +189,17 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     total_end = total_y[-1]
 
     print("Energy diff:", abs(total_initial - total_end) / abs(total_initial))
-    
+
     potential_energy_max_index = np.argmax(potential_y)
     potential_energy_min_index = np.argmin(potential_y)
 
-    dx = potential_x[potential_energy_max_index] - potential_x[potential_energy_min_index]
-    dy = np.log(potential_y[potential_energy_max_index]) - np.log(potential_y[potential_energy_min_index])
+    dx = (
+        potential_x[potential_energy_max_index]
+        - potential_x[potential_energy_min_index]
+    )
+    dy = np.log(potential_y[potential_energy_max_index]) - np.log(
+        potential_y[potential_energy_min_index]
+    )
 
     print("Gradient                 :", dy / dx)
     print("gamma_energy (theory)    :", gamma_energy)
@@ -222,7 +229,7 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
         label="Field Energy",
         linewidth=2,
         markersize=8,
-        base=np.e
+        base=np.e,
     )
     ax2.semilogy(
         potential_x,
@@ -231,33 +238,38 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
         label="Potential Energy",
         linewidth=2,
         markersize=8,
-        base=np.e
+        base=np.e,
     )
     ax2.semilogy(
-        [potential_x[potential_energy_min_index], potential_x[potential_energy_max_index]],
-        [potential_y[potential_energy_min_index], potential_y[potential_energy_max_index]],
+        [
+            potential_x[potential_energy_min_index],
+            potential_x[potential_energy_max_index],
+        ],
+        [
+            potential_y[potential_energy_min_index],
+            potential_y[potential_energy_max_index],
+        ],
         color="r",
         label="Fit",
         linewidth=2,
         markersize=8,
         linestyle="--",
-        base=np.e
+        base=np.e,
     )
 
     ax2.semilogy(
         [tx0, tx1],
-        [ishift*iy0, ishift*iy1],
+        [ishift * iy0, ishift * iy1],
         color="k",
         label="Fit",
         linewidth=2,
         markersize=8,
         linestyle="--",
-        base=np.e
+        base=np.e,
     )
 
-
-    #ax.set_yscale("log")
-    #ax2.set_yscale("log")
+    # ax.set_yscale("log")
+    # ax2.set_yscale("log")
     ax.set_xlabel(r"Time")
     ax.set_ylabel(r"Field Energy: $\int_{\Omega} \phi^2 dx$")
     ax2.set_ylabel(
@@ -265,7 +277,7 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
     )
 
     def tick_formater(y, pos):
-        return r'$e^{{{:.0f}}}$'.format(np.log(y))
+        return r"$e^{{{:.0f}}}$".format(np.log(y))
 
     ax.yaxis.set_major_formatter(mtick.FuncFormatter(tick_formater))
     ax2.yaxis.set_major_formatter(mtick.FuncFormatter(tick_formater))
@@ -319,7 +331,8 @@ python3 plot_energy.py input.xml field_energy.h5 potential_energy.h5 kinetic_ene
         color=kinetic_colour,
     )
     te_ax.set_ylabel(
-        r"Total Energy ($E$) Rel. Error: $|E - E(0)|/|E(0)|$", color=total_colour
+        r"Total Energy ($E$) Rel. Error: $|E - E(0)|/|E(0)|$",
+        color=total_colour,
     )
 
     fig.savefig("all_energy.pdf", bbox_inches="tight")
