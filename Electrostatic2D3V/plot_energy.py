@@ -220,7 +220,11 @@ def plot_figures(session, two_stream, gamma_energy):
     # assume that the linear (in log space) part we want the gradient of is
     # between the global max and global min
     potential_energy_max_index = np.argmax(potential_y)
-    potential_energy_min_index = np.argmin(potential_y)
+    potential_energy_min_index = np.argmin(potential_y[:potential_energy_max_index])
+
+    x_range = (potential_energy_max_index - potential_energy_min_index)
+    potential_energy_max_index -= int(0.2 * x_range)
+    potential_energy_min_index += int(0.2 * x_range)
 
     dx = (
         potential_x[potential_energy_max_index]
