@@ -31,7 +31,7 @@
             <P> particle_num_write_particle_steps = 0 </P>
             <P> particle_num_write_field_energy_steps = 20 </P>
             <P> particle_num_write_field_steps = 0 </P>
-            <P> particle_num_print_steps = 0 </P>
+            <P> particle_num_print_steps = 20 </P>
             <P> particle_distribution_position = 2 </P>
             <P> particle_initial_velocity = 1.0 </P>
             <P> particle_charge_density = 52.637890139143245 </P>
