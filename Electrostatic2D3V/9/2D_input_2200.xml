@@ -14,6 +14,13 @@
             <I PROPERTY="Projection" VALUE="Continuous" />
         </SOLVERINFO>
 
+        <GLOBALSYSSOLNINFO>
+            <V VAR="u">
+            <I PROPERTY="GlobalSysSoln" VALUE="IterativeStaticCond" />
+            <I PROPERTY="IterativeSolverTolerance" VALUE="1e-8"/>
+            </V>
+        </GLOBALSYSSOLNINFO>
+
         <PARAMETERS>
             <P> Lambda = 0.0 </P>
             <P> epsilon = -1.0 </P>
