@@ -254,9 +254,14 @@ def plot_figures(session, two_stream, gamma_energy):
     ax2 = ax.twinx()
 
     field_colour = "b"
-    potential_colour = "m"
+    potential_colour = "indigo"
     kinetic_colour = "r"
     total_colour = "k"
+
+    field_style = "solid"
+    potential_style = "-."
+    kinetic_style = "solid"
+    total_style = ":"
 
     ax.semilogy(
         x,
@@ -266,6 +271,7 @@ def plot_figures(session, two_stream, gamma_energy):
         linewidth=2,
         markersize=8,
         base=np.e,
+        linestyle=field_style,
     )
     ax2.semilogy(
         potential_x,
@@ -275,6 +281,7 @@ def plot_figures(session, two_stream, gamma_energy):
         linewidth=2,
         markersize=8,
         base=np.e,
+        linestyle=potential_style,
     )
     ax2.semilogy(
         [
@@ -300,7 +307,7 @@ def plot_figures(session, two_stream, gamma_energy):
         label=f"Theory gamma: ${gamma_energy}$",
         linewidth=2,
         markersize=8,
-        linestyle="--",
+        linestyle=":",
         base=np.e,
     )
     ax2.legend()
@@ -339,6 +346,7 @@ def plot_figures(session, two_stream, gamma_energy):
         label="Potential Energy",
         linewidth=2,
         markersize=8,
+        linestyle=potential_style,
     )
     ke_ax.plot(
         kinetic_x,
@@ -347,6 +355,7 @@ def plot_figures(session, two_stream, gamma_energy):
         label="Kinetic Energy",
         linewidth=2,
         markersize=8,
+        linestyle=kinetic_style,
     )
     te_ax.plot(
         total_x,
@@ -355,6 +364,7 @@ def plot_figures(session, two_stream, gamma_energy):
         label="Total Energy",
         linewidth=2,
         markersize=8,
+        linestyle=total_style,
     )
 
     # ax.set_yscale('log')
