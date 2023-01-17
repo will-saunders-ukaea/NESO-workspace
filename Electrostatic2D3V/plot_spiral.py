@@ -90,7 +90,7 @@ def plot_figures(session, trajectory):
             time_data_x[particle_id, stepi] = velocity_x
 
     # plot field energy and potential energy
-    fig = plt.figure(figsize=(16, 6))
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.add_subplot(111)
 
     norm = mpl.colors.Normalize(vmin=1.0, vmax=2.0)
@@ -116,7 +116,7 @@ def plot_figures(session, trajectory):
 
 
     # plot field energy and potential energy
-    fig = plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=(7.5, 6))
     ax = fig.add_subplot(111)
 
     norm = mpl.colors.Normalize(vmin=1.0, vmax=2.0)
