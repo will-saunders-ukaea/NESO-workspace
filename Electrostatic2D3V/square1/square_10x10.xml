@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2">
+        <VERTEX COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJx9l2tMlXUcx08KKiBCdEhIbnExCAKECiOvmdeMOIoWHT15uJwQKAIKDi8EX8gp4OQQ8IJd3Bz2wo2tojfWWmsSJqFvXC4spw3nJl0mbFBtqB34ff/P0/cv6//mw54Pf57/83muWCz/Px4Aq0q7fePMat3PAd8rEr+pk39vrvb7x7rZ+4GDLtk+0THN84b31+Yf72Y/D/y8UuYHp2f7xiXDz9fmL8tmvwC8WyPz/5zZ/7DhA2Zdv+kDQWeDzP/m73u+cc3wQZbZxnXDLwSHmmT+cMb0+kYMH6zNnFn+f/wicLlH5p8pdvnGTcOHaPNdLvahYI9X5g8cneYtwz+ozZf+pg8DrTjvv/4w5Bu/G/4hbf6FIfZWkK+L24YPt8w2TP8w6LTzdaHGYvCkQ/yIl6+/CDC+RPxmL/+dSLCpXLaPJfP18wiYUC3e5eXrYwl4uV786TG+PqLArkbxh9L4/EaDec3iw518/mLAUKx74jCfn1jwAu6ryUHuHwfyfWX2fVSt714WHbca8eCnftLF7eG+CeBPAeI/bua+iaBfiPgrCdw3CUy3yvZbzdx3KVgYKf6TUe77GNgcI96Wwn2TwT7st87BfVPAqzjvyV3c93EwAM+dhVrfVJCfO2bfNLDexselxhPghF180H7um66Or0T8eCP3zQBPVIgfiOG+mWB+jfjaJl7HMvCmW7afHuG+WWr9mBe+lPtmg4Ee8Vfs3PdJsBv3jb2D+z4FxneKTzzPfZ8G+bls9s0BY3t43WosB//4SvyJBu77DHhpQPwGN/fNBW9cFP9ZJPd9Fky5LH7KzX1XqHVeFd/7C69zpdrPDdk+HM99Vyn/m/hVhdxX/ZAzLr69nfuuAVP/EZ/7PfddS7Wu39f3OTBpEa9LjXVghlV8Vi33fR4cjxB/vJr7rgd7o8R/aOW+G8CAOPGeGu67UTFB/Bc/ct9N4D5ctx/F8nFsBvvw3Di5k/tuAUfw3O4/yH1fAEMzxeef475bQX6vm31fBD/YwvtVIw+MyxN/tpL7vgTusYkfL+e++eo4C8S3hnBfGziF4w6r5L7bwGO47r68yH23g2m7xBdFcd8C8Fs8d+cV8HHuUOvAe2/Sy313gtfw3bN3gPu+DPJ3j9n3FTDsXf67ahSCKS3iPS7u+yqY2Sa+uIT72sHo98VXBXLfXeBfuG7KSrnvbrAf923pOe7rAL14bt6J4L6vgdvw3tph4757wMVHxCe2cQcn+DO+Cxu/475FIH8Xmn2LwdazPE+NErClX/ykk/uWggew31MO7usCG3Dec/y57+tgGe67Jbu5bxm4Hc+96K+5714wF+8dj5X7loOxeO+vy+O+FaA/vouzW7hvJTgK7+3nTm+A/N1s9n2Tat6+r2+V5vX/497SvP4dXa15/TuwRvP6d0yt5vX38Nua198j72hefw7WaV6/j+s1r1+Hbs0zLZZ/AdEIekUA</VERTEX>
+        <EDGE COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJx1llO3XEEUBm9s2xPb9sS2PbFt27Zt27bt5M/kpeshtda5L73qW+f2nJnavXcnJf3/lyxiTR6xpohY+Uup5+FUEZxazH5p9DzPpRXzXDox+6WP+P8MYv4/Y8R+mfQ8+2YWs28WMftl1fN8XjYxn5ddzH459DzvkVPMe+QSs19uPc/75RHzfnnF7JdPz/Pe+cW8dwEx+xXU83yfQmK+T2Ex+xUJK/XM94yJ+Z5FxdRvMeV8/+Ji6rSEcn6XkmLqsZRyfq/SYuqujHJ+x7Ji6quccn7f8mLqqIJyfveKYuqlknJ8VBZTF1WU46mqGP/VlMfCWl1MXdQIK37xWlOM11piPNdWju86YjzXVU4d1BPjub5y6qOBGM8NlVM3jcR4bqyceoqL8dxEOXXWVIznZsqpv+ZiPLdQTl22FOO5lXLqtbU4FtY2YcUvddxWTB23E+O5vXLqu4MYzx2VU/edxHjurJzz0EWM567KOSfdxHjurpzz00OM557KOVe9xHjurZzz1keM577KOYf9xHjur5zzOUCM/4FhxS/ndpCYc5sQ43mwcs7zEDGehyrnnA8T43m4cs7/CDGeRyqnL4wS43m0cvrFGDGexyqnj4wT43m8cvrLBDGeJyqPh3WSGM+TldOPpojxPzWs+KVPTRPTp6aL8TxDOf1rphjPs5TT12aL8TxHOf1urhjP85TTB+eL8bxAOf1xoRjPi5TTNxeL8bxEOf10qRjPy5TTZ5eL42FdoZz+u1KM/1VhxS99ebWYvrxGjOe1yunX68R4Xq+cPr5BjOeNyunvm8R43qycvr9FjOetypkH28R43q6cObFDjOedypkfu8R43q2cubJHjOe9ypk3+8T43x9W/DKHDoiZQwfFeD6knPl0WIznI8qZW0fFeD6mnHl2XIznE8qZcyfFeD6lnPl3WoznM8qZi2fFeD6nPBHW82I8X1DOHL0oxvMl5czXy2L8Xwkrfpm7V8XM3WtiPF9Xzjy+IcbzTeXM6VtiPN9Wzvy+I8bzXeXM9XtiPN9Xzrx/IMbzQ+XcAx6J8fxYOfeDJ+JEWJ8q597wTIzn58q5T7wQ4/9lWPHLPeOVmHvGazGe3yjn/vFWjOd3yrmXvBfj+YNy7isfxXj+pJx7zGcxnr8o537zVYznb8q593wX4/mHcu5DP8V4/qWce9JvMZ7/KOf+9FeM/3/uUMT6</EDGE>
+        <ELEMENT>
+            <Q COMPRESSED="B64Z-LittleEndian" BITSIZE="64">eJx11dVTlGEAhXHswC5CVBRExQAlFAzAQlHAwg7A7u7C7u7u7u7u7v5nvHnOhWfGvfnNPDvz7bvf2QgI+PdRCAtjkf/0olgMi9vz6iWwJJay66qXxkAsY6+jXhbLYXl7PfUKWBEr2TnVK2MVrGrnVq+GQRhs51cPwVCsjqWsh2ENrIm6D7UwHGujdgi0XgcjUPetjPVIrIt6n2WtR2E9O1c56/WxgV2nvPVobIgVTPVG2Bi1T0XrTTAGtU8l67HYFLVPZevNMA61j/aPxwRMxHCsar05tkDtU816Eiaj9gmy3hJbofYJtt4a26D2CbGegqmofUKtp2Fb1D7VrbfD9qh9wqx3wI6ofWpYT8dOqH30PemMGdgFtU8t610xE7VPuPUszEbtU9t6N+yO2qeO9R7YE7VPhPVemIPaJ9J6b+yD2qeu9b7YD7VPlPX+OAC1Tz3rA3EQah99vgbjEMxF7dPAeh7mo/aJtj4Uh6H2aWh9OI5A7dPI+kgchdqnsfXROAa1TxPrY3Ecap8Y6+NxAmqfWOsTcRJqn6bWJ+MU1D76nkzFaTgdtU+c9Rk4E7VPvPVZOBu1T4L1OTgXtU+i9Xk4H7VPc+sLcCFqnxbWC3ARap8k64txCWqfZOtLcRlqn5bWl+MK1D76XV6Jq3A1ap/W1tfgWtQ+bayvw/WofVKsb8CNqH1SrW/Czah90qxvwa2ofdpa34bbsQDbWd+BO1H7tLe+C3ej9ulgfQ/uRe2j/5d9uB8PoPZJt34QD6H26WT9MB5B7dPZ+lE8htonw/pxPIHap4v1k3gKtU9X66fxDGqfTOtn8Rxqnyzr5/ECap9s6xfxEmof/U5fxit4FbVPd+vX8DoexB7Wb+BN1D49rd/C26h9elm/g3dR++RYv4f3Ufv0tv4AH6L26WP9ET5G7dPX+hN8itqnn/Vn+By1j/5vXuBLfIXaZ4D11/gGtc9A62/xHWqfQdbf4wfUPoOtf8RPqH2GWP+MX1D75Fr/it9Q++RZ/44/UPvkW/+Jv1D7DLX+G/+g9vkL54O91QAA</Q>
+        </ELEMENT>
+        <COMPOSITE>
+            <C ID="1"> Q[0-99] </C>
+            <C ID="100"> E[0,31,52,73,94,115,136,157,178,199] </C>
+            <C ID="200"> E[200,202,204,206,208,210,212,214,216,218] </C>
+            <C ID="300"> E[219,198,177,156,135,114,93,72,51,29] </C>
+            <C ID="400"> E[30,27,24,21,18,15,12,9,6,3] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.3.0</NektarVersion>
+            <Timestamp>01-Nov-2022 16:27:57</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>periodic_structured_cartesian_square.msh periodic_structured_cartesian_square_10x10.xml </NekMeshCommandLine>
+    </Metadata>
+</NEKTAR>
