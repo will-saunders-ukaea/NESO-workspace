@@ -1,3 +1,13 @@
+Cmake:
+
+```
+cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_BUILD_TYPE=RelWithDebInfo .
+# or (to force use of fftw over mkl)
+cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_BUILD_TYPE=RelWithDebInfo -DNESO_DISABLE_MKL=1 .
+
+make -j 12 Electrostatic2D3V.x
+```
+
 Example launch:
 
 ```
