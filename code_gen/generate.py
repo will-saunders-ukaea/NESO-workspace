@@ -10,8 +10,10 @@ if not os.path.exists("generated_code"):
 class GeneratedClass:
     def __init__(self, name):
         self.name = name
+        self.member_sources = []
 
     def __str__(self):
+        ms = "\n".join([str(sx) for sx in self.member_sources])
         s = f"""
 /**
 * Generated class {self.name}
@@ -27,6 +29,8 @@ template<typename T>
 inline void register_symbol(std::string name, std::shared_ptr<T> dat){{
     this->dats[name] = dat;
 }}
+
+{ms}
 
 }};
 """
@@ -49,7 +53,6 @@ def write_generated_classes(generated_classes, path):
 namespace NESO::Particles {{
 
 {SOURCE}
-
 
 }}
 #endif

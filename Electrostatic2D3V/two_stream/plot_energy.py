@@ -207,7 +207,7 @@ def plot_figures(session, two_stream, gamma_energy):
         t = dt * int(keyx)
         x[keyi] = t
         field_y[keyi] = step_data[keyx]["field_energy"][0]
-        potential_y[keyi] = 0.5 * step_data[keyx]["potential_energy"][0]
+        potential_y[keyi] = step_data[keyx]["potential_energy"][0]
         kinetic_y[keyi] = step_data[keyx]["kinetic_energy"][0]
     # these time values are all identical
     potential_x = x
