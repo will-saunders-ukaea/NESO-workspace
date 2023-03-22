@@ -24,7 +24,7 @@ def get_last_evaluations(data):
     for ix in index_values_1:
         assert ix == 0, "Script only written for 1 line in the y direction."
     
-    # raw potential values in the same order as 
+    # raw potential values in the same order as x values
     phi_values_raw = data[last_step_name]["FIELD_EVALUATION_0"]
     x_values_raw = data[last_step_name]["x"]
     
