@@ -105,7 +105,7 @@
             </REGION>
         </BOUNDARYCONDITIONS>
         <FUNCTION NAME="InitialConditions">
-            <E VAR="rho" DOMAIN="0" VALUE="rhoInf*0.2" />
+            <E VAR="rho" DOMAIN="0" VALUE="rhoInf" />
             <E VAR="rhou" DOMAIN="0" VALUE="0.0" />
             <E VAR="rhov" DOMAIN="0" VALUE="0.0" />
             <E VAR="E" DOMAIN="0" VALUE="pInf/(Gamma-1)" />
