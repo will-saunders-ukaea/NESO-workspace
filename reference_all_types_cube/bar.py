@@ -27,7 +27,7 @@ gmsh.initialize(sys.argv)
 gmsh.model.add("ref_cube")
 
 
-lc = 0.25
+lc = 0.2
 
 zlevels = [-1.0, -0.6, -0.2, 0.2, 0.6, 1.0]
 
@@ -85,14 +85,13 @@ for z in range(5):
 
 gmsh.model.geo.synchronize()
 
-horizontal_planes_to_be_quads = [4, 5]
+horizontal_planes_to_be_quads = [0, 1, 4, 5]
 for z in horizontal_planes_to_be_quads:
     gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
     gmsh.model.mesh.set_transfinite_surface(sm[f"{z}P"])
 
-horizontal_planes_to_be_quads = [0, 1]
-for z in horizontal_planes_to_be_quads:
-    #gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
+structured_horiztonal_planes = [2, 3]
+for z in structured_horiztonal_planes:
     gmsh.model.mesh.set_transfinite_surface(sm[f"{z}P"])
 
 vertical_planes_to_be_quads = [
@@ -113,18 +112,19 @@ for z in vertical_planes_to_be_quads:
     gmsh.model.mesh.setRecombine(2, z)
     gmsh.model.mesh.set_transfinite_surface(z)
 
-volumes_to_be_quads = [
+volumes_to_be_structured = [
     vm[f"0"],
+    vm[f"2"],
     vm[f"4"],
 ]
-for z in volumes_to_be_quads:
+for z in volumes_to_be_structured:
     gmsh.model.mesh.set_transfinite_volume(z)
 
 # We finally generate and save the mesh:
 gmsh.model.mesh.generate(3)
-gmsh.write("t2.msh")
+gmsh.write(f"mixed_ref_cube_{lc}.msh")
 # Launch the GUI to see the results:
-if '-nopopup' not in sys.argv:
+if '-v' in sys.argv:
     gmsh.fltk.run()
 
 gmsh.finalize()
