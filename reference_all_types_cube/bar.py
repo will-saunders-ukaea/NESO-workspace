@@ -27,7 +27,7 @@ gmsh.initialize(sys.argv)
 gmsh.model.add("ref_cube")
 
 
-lc = 0.7
+lc = 0.25
 
 zlevels = [-1.0, -0.6, -0.2, 0.2, 0.6, 1.0]
 
@@ -85,9 +85,14 @@ for z in range(5):
 
 gmsh.model.geo.synchronize()
 
-horizontal_planes_to_be_quads = [0, 1, 4, 5]
+horizontal_planes_to_be_quads = [4, 5]
 for z in horizontal_planes_to_be_quads:
     gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
+    gmsh.model.mesh.set_transfinite_surface(sm[f"{z}P"])
+
+horizontal_planes_to_be_quads = [0, 1]
+for z in horizontal_planes_to_be_quads:
+    #gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
     gmsh.model.mesh.set_transfinite_surface(sm[f"{z}P"])
 
 vertical_planes_to_be_quads = [
