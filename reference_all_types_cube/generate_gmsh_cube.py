@@ -1,7 +1,8 @@
 import gmsh
 import sys
-import math
 
+# small values generate a more refined mesh
+lc = 0.7
 
 class EntityMap:
     def __init__(self):
@@ -23,11 +24,7 @@ vm = EntityMap()
 # If sys.argv is passed to gmsh.initialize(), Gmsh will parse the command line
 # in the same way as the standalone Gmsh app:
 gmsh.initialize(sys.argv)
-
 gmsh.model.add("ref_cube")
-
-
-lc = 0.2
 
 zlevels = [-1.0, -0.6, -0.2, 0.2, 0.6, 1.0]
 
@@ -85,6 +82,24 @@ for z in range(5):
 
 gmsh.model.geo.synchronize()
 
+
+# create the physical volume
+gmsh.model.add_physical_group(3, [vm[f"{z}"] for z in range(5)], 1)
+# create the physical surfaces
+# sides
+gmsh.model.add_physical_group(2, [sm[f"{z}S"] for z in range(5)], 100)
+gmsh.model.add_physical_group(2, [sm[f"{z}N"] for z in range(5)], 200)
+gmsh.model.add_physical_group(2, [sm[f"{z}E"] for z in range(5)], 300)
+gmsh.model.add_physical_group(2, [sm[f"{z}W"] for z in range(5)], 400)
+# bottom
+gmsh.model.add_physical_group(2, (sm[f"0P"],), 500)
+# top
+gmsh.model.add_physical_group(2, (sm[f"5P"],), 600)
+
+
+gmsh.model.geo.synchronize()
+
+
 horizontal_planes_to_be_quads = [0, 1, 4, 5]
 for z in horizontal_planes_to_be_quads:
     gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
@@ -120,11 +135,12 @@ volumes_to_be_structured = [
 for z in volumes_to_be_structured:
     gmsh.model.mesh.set_transfinite_volume(z)
 
+
 # We finally generate and save the mesh:
 gmsh.model.mesh.generate(3)
 gmsh.write(f"mixed_ref_cube_{lc}.msh")
 # Launch the GUI to see the results:
-if '-v' in sys.argv:
+if '--visualise' in sys.argv:
     gmsh.fltk.run()
 
 gmsh.finalize()
