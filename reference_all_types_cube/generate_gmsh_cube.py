@@ -2,7 +2,7 @@ import gmsh
 import sys
 
 # small values generate a more refined mesh
-lc = 0.7
+lc = 0.2
 
 class EntityMap:
     def __init__(self):

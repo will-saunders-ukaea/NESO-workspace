@@ -8,7 +8,6 @@ from mpl_toolkits.axes_grid1 import Divider, Size
 from mpl_toolkits.axes_grid1.mpl_axes import Axes
 import matplotlib.ticker as mtick
 import h5py
-import xml.etree.ElementTree as ET
 import math
 
 

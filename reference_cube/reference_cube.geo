@@ -1,7 +1,7 @@
 SetFactory("OpenCASCADE");
 
 Box(1) = {-1, -1, -1, 2, 2, 2};
-MeshSize {:} = 0.5;
+MeshSize {:} = 0.2;
 Periodic Surface {2} = {1} Translate {2, 0, 0};
 Periodic Surface {6} = {5} Translate {0, 0, 2};
 Periodic Surface {4} = {3} Translate {0, 2, 0};
@@ -14,3 +14,7 @@ Physical Surface (500) = {5};
 Physical Surface (600) = {6};
 
 Physical Volume (1) = {1};
+
+//Mesh.Algorithm = 6;
+//Mesh.Algorithm3D = 1;
+Mesh.SubdivisionAlgorithm = 2;

@@ -1,4 +1,5 @@
 from sympy import *
+from sympy.codegen.rewriting import create_expand_pow_optimization
 import numpy as np
 init_printing(use_unicode=True)
 
@@ -30,6 +31,14 @@ phys = Matrix(
     ]
 )
 
+fv0 = symbols("f0")
+fv1 = symbols("f1")
+fv = Matrix(
+    [
+        fv0,
+        fv1
+    ]
+)
 
 def get_x():
     x = Matrix(
@@ -45,6 +54,10 @@ def get_x():
         ]
     )
     return x
+
+x = get_x()
+f = x - phys
+J = f.jacobian(xi)
 
 def newton_step(vertices, a0, a1, phys0_val, phys1_val):
 
@@ -75,12 +88,13 @@ def xi_to_phys(vertices, xi0v, xi1v):
 def newton_residual(vertices, xi0, xi1, phys0v, phys1v):
     target = np.array((phys0v, phys1v)).ravel()
     out = np.array(xi_to_phys(vertices, xi0, xi1)).ravel()
+
     return np.linalg.norm(target - out, np.inf)
 
 
 
 def print_x(step):
-
+    expand_opt = create_expand_pow_optimization(99)
     print(
 """
 /**
@@ -112,10 +126,12 @@ def print_x(step):
  * @param[in] v31 Vertex 3, y component of quadrilateral.
  * @param[in] phys0 Target point in physical space, x component.
  * @param[in] phys1 Target point in physical space, y component.
+ * @param[in] f0 Current f evaluation at xi, x component.
+ * @param[in] f1 Current f evaluation at xi, y component.
  * @param[in, out] xin0 Output local coordinate iteration, x component.
  * @param[in, out] xin1 Output local coordinate iteration, y component.
  */
-inline void newton_step_quad_linear(
+inline void newton_step_linear_2d(
 const REAL xi0,
 const REAL xi1,
 const REAL v00,
@@ -128,6 +144,8 @@ const REAL v30,
 const REAL v31,
 const REAL phys0,
 const REAL phys1,
+const REAL f0,
+const REAL f1,
 REAL * xin0,
 REAL * xin1
 ){"""
@@ -136,7 +154,7 @@ REAL * xin1
     cse_list = cse(step_list, optimizations='basic')
     for cse_expr in cse_list[0]:
         lhs = cse_expr[0]
-        rhs = cse_expr[1]
+        rhs = expand_opt(cse_expr[1])
         expr = f"const REAL {lhs} = {rhs};"
         print(expr)
 
@@ -148,17 +166,76 @@ REAL * xin1
     print("*xin1 = xin1_tmp;")
     print("}\n")
 
+    print(
+"""
+/**
+ * Compute and return F evaluation for Quadrilateral where
+ * 
+ * F(xi) = X(xi) - X_phys
+ * 
+ * where X_phys are the global coordinates.
+ * 
+ * This is a generated function. To modify this function please edit the script
+ * that generates this function.
+ * 
+ * @param[in] xi0 Current xi_n point, x component.
+ * @param[in] xi1 Current xi_n point, y component.
+ * @param[in] v00 Vertex 0, x component of quadrilateral.
+ * @param[in] v01 Vertex 0, y component of quadrilateral.
+ * @param[in] v10 Vertex 1, x component of quadrilateral.
+ * @param[in] v11 Vertex 1, y component of quadrilateral.
+ * @param[in] v20 Vertex 2, x component of quadrilateral.
+ * @param[in] v21 Vertex 2, y component of quadrilateral.
+ * @param[in] v30 Vertex 3, x component of quadrilateral.
+ * @param[in] v31 Vertex 3, y component of quadrilateral.
+ * @param[in] phys0 Target point in physical space, x component.
+ * @param[in] phys1 Target point in physical space, y component.
+ * @param[in, out] f0 Current f evaluation at xi, x component.
+ * @param[in, out] f1 Current f evaluation at xi, y component.
+ */
+inline void newton_f_linear_2d(
+const REAL xi0,
+const REAL xi1,
+const REAL v00,
+const REAL v01,
+const REAL v10,
+const REAL v11,
+const REAL v20,
+const REAL v21,
+const REAL v30,
+const REAL v31,
+const REAL phys0,
+const REAL phys1,
+REAL * f0,
+REAL * f1
+){"""
+    )
+    step_list = [f[0], f[1]]
+    cse_list = cse(step_list, optimizations='basic')
+    for cse_expr in cse_list[0]:
+        lhs = cse_expr[0]
+        rhs = expand_opt(cse_expr[1])
+        expr = f"const REAL {lhs} = {rhs};"
+        print(expr)
+
+    expr_xin0 = f"const REAL f0_tmp = {cse_list[1][0]};"
+    expr_xin1 = f"const REAL f1_tmp = {cse_list[1][1]};"
+    print(expr_xin0)
+    print(expr_xin1)
+    print("*f0 = f0_tmp;")
+    print("*f1 = f1_tmp;")
+    print("}\n")
+
+
+
 
 
 if __name__ == "__main__":
 
-    x = get_x()
-    f = x - phys
-    J = f.jacobian(xi)
 
-    step = solve(xin - xi + (J**(-1)) * f, xin, dict=True)
+
+    step = solve(xin - xi + (J**(-1)) * fv, xin, dict=True)
     step_list = [step[0][xin0], step[0][xin1]]
-
 
     vertices_ref = {
         v00 : -1.0,
@@ -193,6 +270,8 @@ if __name__ == "__main__":
         v21 :  2.0,
         v30 : -1.0,
         v31 :  4.0,
+        fv0 : 0.0,
+        fv1 : 0.0,
     }
     
 
@@ -204,10 +283,38 @@ if __name__ == "__main__":
 
     xin0v = 0.0
     xin1v = 0.0
+    fv0v = 0.0
+    fv1v = 0.0
 
     res = newton_residual(vertices, xin0v, xin1v, test_phys0, test_phys1)
+    
+    subs = {
+        phys0 : test_phys0,
+        phys1 : test_phys1,
+        xi0 : xin0v,
+        xi1 : xin1v,
+    }
+    subs.update(vertices)
+    tmp = f.evalf(subs=subs)
+    fv0v = float(tmp[0])
+    fv1v = float(tmp[1])
+    vertices[fv0] = fv0v
+    vertices[fv1] = fv1v
+
     for stepx in range(5):
         xin0v, xin1v = newton_step(vertices, xin0v, xin1v, test_phys0, test_phys1)
+        subs = {
+            phys0 : test_phys0,
+            phys1 : test_phys1,
+            xi0 : xin0v,
+            xi1 : xin1v,
+        }
+        subs.update(vertices)
+        tmp = f.evalf(subs=subs)
+        fv0v = float(tmp[0])
+        fv1v = float(tmp[1])
+        vertices[fv0] = fv0v
+        vertices[fv1] = fv1v
         res = newton_residual(vertices, xin0v, xin1v, test_phys0, test_phys1)
 
     assert abs(xi_correct0 - xin0v) < 1.0e-15, "self newton test failed"
