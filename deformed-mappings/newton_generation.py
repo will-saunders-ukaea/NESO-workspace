@@ -40,7 +40,17 @@ class Newton(NewtonCommon):
     def __init__(self, geom):
         NewtonCommon.__init__(self, geom)
         self.J = self._f.jacobian(self.xi)
-        self.step = solve(self.xi_next - self.xi + (self.J ** (-1)) * self.fv, self.xi_next, dict=True)
+
+        Jsymbols = []
+        ndim = geom.ndim
+        for rowx in range(ndim):
+            Jsymbols.append([])
+            for colx in range(ndim):
+                Jsymbols[-1].append(symbols(f"J{rowx}{colx}"))
+
+        self.J_symbolic = Matrix(Jsymbols)
+        self.Jinv_symbolic = self.J_symbolic.inv()
+        self.step = solve(self.xi_next - self.xi + (self.Jinv_symbolic) * self.fv, self.xi_next, dict=True)
         self.step_components = [self.step[0][self.xi_next[dimx]] for dimx in range(self.ndim)]
         self.f = self._f
         self.x = self._x
@@ -75,6 +85,11 @@ class NewtonEvaluate:
             subs[self.evaluate.phys[dimx]] = phys[dimx]
             subs[self.evaluate.xi[dimx]] = xi[dimx]
             subs[self.newton.fv[dimx]] = fv[dimx]
+
+        Jeval = self.newton.J.evalf(subs=subs)
+        for rowx in range(ndim):
+            for colx in range(ndim):
+                subs[self.newton.J_symbolic[rowx, colx]] = Jeval[rowx, colx]
 
         xin = [self.newton.step_components[dimx].evalf(subs=subs) for dimx in range(ndim)]
         xinfloat = [float(ex) for ex in xin]
@@ -229,7 +244,29 @@ class NewtonLinearCCode:
 )"""
 
         instr = ["{"]
-        cse_list = cse(self.newton.step_components, optimizations="basic")
+
+        J_steps = []
+        J_lhs = []
+        for rowx in range(ndim):
+            for colx in range(ndim):
+                J_lhs.append(self.newton.J_symbolic[rowx, colx])
+                J_steps.append(self.newton.J[rowx, colx])
+
+        cse_list = cse(J_steps, optimizations="basic")
+        for cse_expr in cse_list[0]:
+            lhs = cse_expr[0]
+            rhs = expand_opt(cse_expr[1])
+            expr = f"const REAL {lhs} = {rhs};"
+            instr.append(expr)
+
+        counter = 0
+        for rowx in range(ndim):
+            for colx in range(ndim):
+                expr = f"const REAL J{rowx}{colx} = {cse_list[1][counter]};"
+                counter += 1
+                instr.append(expr)
+
+        cse_list = cse(self.newton.step_components, numbered_symbols("y"), optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
             rhs = expand_opt(cse_expr[1])
@@ -271,7 +308,9 @@ class LinearBase:
     def __init__(self, num_vertices, ndim, name, x_description):
         self.num_vertices = num_vertices
         self.ndim = ndim
-        self.vertices = [make_vector("v{}0".format(vx), "v{}1".format(vx)) for vx in range(self.num_vertices)]
+        self.vertices = [
+            make_vector(*["v{}{}".format(vx, dx) for dx in range(self.ndim)]) for vx in range(self.num_vertices)
+        ]
         self.name = name
         self.x_description = x_description
 

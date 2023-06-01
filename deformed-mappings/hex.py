@@ -1,0 +1,138 @@
+from newton_generation import *
+
+"""
+0 -1 -1 -1
+1 -0.8 -1 -1
+2 -0.8 -0.8 -1
+3 -1 -0.8 -1
+4 -1 -1 -0.8
+5 -0.8 -1 -0.8
+6 -0.8 -0.8 -0.8
+7 -1 -0.8 -0.8
+-1 -1 -1 	| -1 -1 -1
+1 -1 -1 	| -0.8 -1 -1
+1 1 -1 	| -0.8 -0.8 -1
+-1 1 -1 	| -1 -0.8 -1
+-1 -1 1 	| -1 -1 -0.8
+1 -1 1 	| -0.8 -1 -0.8
+1 1 1 	| -0.8 -0.8 -0.8
+-1 1 1 	| -1 -0.8 -0.8
+test coord = ( -0.6 , -0.7 , -0.9 )
+correct_global_coord = ( -0.96 , -0.97 , -0.99 )
+correct_global_coord = ( -0.960000, -0.970000, -0.990000)
+"""
+
+
+class LinearHex(LinearBase):
+    def __init__(self):
+
+        num_vertices = 8
+        ndim = 3
+        name = "linear_3d"
+        x_description = """
+X(xi) = (1/8) * v0 * (1 - xi_0) * (1 - xi_1) * (1 - xi_2) + 
+        (1/8) * v1 * (1 + xi_0) * (1 - xi_1) * (1 - xi_2) + 
+        (1/8) * v2 * (1 + xi_0) * (1 + xi_1) * (1 - xi_2) + 
+        (1/8) * v3 * (1 - xi_0) * (1 + xi_1) * (1 - xi_2) + 
+        (1/8) * v4 * (1 - xi_0) * (1 - xi_1) * (1 + xi_2) + 
+        (1/8) * v5 * (1 + xi_0) * (1 - xi_1) * (1 + xi_2) + 
+        (1/8) * v6 * (1 + xi_0) * (1 + xi_1) * (1 + xi_2) + 
+        (1/8) * v7 * (1 - xi_0) * (1 + xi_1) * (1 + xi_2)
+"""
+        LinearBase.__init__(self, num_vertices, ndim, name, x_description)
+
+    def get_x(self, xi):
+
+        v = self.vertices
+        x = Matrix(
+            [
+                0.125 * v[0][0] * (1 - xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[1][0] * (1 + xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[2][0] * (1 + xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[3][0] * (1 - xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[4][0] * (1 - xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[5][0] * (1 + xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[6][0] * (1 + xi[0]) * (1 + xi[1]) * (1 + xi[2])
+                + 0.125 * v[7][0] * (1 - xi[0]) * (1 + xi[1]) * (1 + xi[2]),
+                0.125 * v[0][1] * (1 - xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[1][1] * (1 + xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[2][1] * (1 + xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[3][1] * (1 - xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[4][1] * (1 - xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[5][1] * (1 + xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[6][1] * (1 + xi[0]) * (1 + xi[1]) * (1 + xi[2])
+                + 0.125 * v[7][1] * (1 - xi[0]) * (1 + xi[1]) * (1 + xi[2]),
+                0.125 * v[0][2] * (1 - xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[1][2] * (1 + xi[0]) * (1 - xi[1]) * (1 - xi[2])
+                + 0.125 * v[2][2] * (1 + xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[3][2] * (1 - xi[0]) * (1 + xi[1]) * (1 - xi[2])
+                + 0.125 * v[4][2] * (1 - xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[5][2] * (1 + xi[0]) * (1 - xi[1]) * (1 + xi[2])
+                + 0.125 * v[6][2] * (1 + xi[0]) * (1 + xi[1]) * (1 + xi[2])
+                + 0.125 * v[7][2] * (1 - xi[0]) * (1 + xi[1]) * (1 + xi[2]),
+            ]
+        )
+        return x
+
+
+if __name__ == "__main__":
+
+    hex_x = LinearHex()
+
+    vertices_ref = (
+        (-1.0, -1.0, -1.0),
+        (1.0, -1.0, -1.0),
+        (1.0, 1.0, -1.0),
+        (-1.0, 1.0, -1.0),
+        (-1.0, -1.0, 1.0),
+        (1.0, -1.0, 1.0),
+        (1.0, 1.0, 1.0),
+        (-1.0, 1.0, 1.0),
+    )
+    hex_ref = LinearGeomEvaluate(hex_x, vertices_ref)
+
+    for vx in vertices_ref:
+        to_test = hex_ref.x(vx)
+        correct = vx
+        assert np.linalg.norm(np.array(correct).ravel() - np.array(to_test).ravel(), np.inf) < 1.0e-15
+        to_test = hex_ref.f(vx, vx)
+        assert np.linalg.norm(np.array(to_test).ravel(), np.inf) < 1.0e-15
+
+    vertices_test = (
+        (-3.0, -2.0, 2.0),
+        (1.0, -1.0, 2.0),
+        (2.0, 2.0, 2.5),
+        (-1.0, 4.0, 4.5),
+        (-3.0, -2.0, -0.1),
+        (1.0, -1.0, -1.0),
+        (2.0, 2.0, -2.0),
+        (-1.0, 4.0, -1.5),
+    )
+    hex_test = LinearGeomEvaluate(hex_x, vertices_test)
+    hex_newton = Newton(hex_x)
+
+    hex_newton_evaluate = NewtonEvaluate(hex_newton, hex_test)
+
+    xi_correct0 = -0.9
+    xi_correct1 = 0.8
+    xi_correct2 = 0.2
+    xi_correct = (xi_correct0, xi_correct1, xi_correct2)
+    phys = hex_test.x(xi_correct)
+    residual, fv = hex_newton_evaluate.residual(xi_correct, phys)
+    assert residual < 1.0e-15
+
+    xi = [0.0, 0.0, 0.0]
+    for stepx in range(5):
+        residual, fv = hex_newton_evaluate.residual(xi, phys)
+        xin = hex_newton_evaluate.step(xi, phys, fv)
+        xi[0] = xin[0]
+        xi[1] = xin[1]
+        xi[2] = xin[2]
+        print(stepx, residual)
+
+    assert abs(xi[0] - xi_correct[0]) < 1.0e-14
+    assert abs(xi[1] - xi_correct[1]) < 1.0e-14
+
+    hex_newton_ccode = NewtonLinearCCode(hex_newton)
+    print(hex_newton_ccode.residual())
+    print(hex_newton_ccode.step())
