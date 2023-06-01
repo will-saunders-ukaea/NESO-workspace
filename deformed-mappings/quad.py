@@ -1,11 +1,13 @@
 from sympy import *
 from sympy.codegen.rewriting import create_expand_pow_optimization
 import numpy as np
+
 init_printing(use_unicode=True)
 
 
 def make_vector(*args):
     return Matrix([symbols(ax) for ax in args])
+
 
 class SymbolicCommon:
     def __init__(self, geom):
@@ -23,6 +25,7 @@ class NewtonCommon(SymbolicCommon):
         self.xi_next = make_vector(*["xin{}".format(dx) for dx in range(self.ndim)])
         self.fv = make_vector(*["f{}".format(dx) for dx in range(self.ndim)])
 
+
 class LinearEvaluateCommon:
     def __init__(self, geom, vertices):
         assert len(vertices) == geom.num_vertices
@@ -37,7 +40,7 @@ class Newton(NewtonCommon):
     def __init__(self, geom):
         NewtonCommon.__init__(self, geom)
         self.J = self._f.jacobian(self.xi)
-        self.step = solve(self.xi_next - self.xi + (self.J**(-1)) * self.fv, self.xi_next, dict=True)
+        self.step = solve(self.xi_next - self.xi + (self.J ** (-1)) * self.fv, self.xi_next, dict=True)
         self.step_components = [self.step[0][self.xi_next[dimx]] for dimx in range(self.ndim)]
         self.f = self._f
         self.x = self._x
@@ -64,7 +67,6 @@ class NewtonEvaluate:
             r = max(r, abs(ex))
         return r, efloat
 
-
     def step(self, xi, phys, fv):
         subs = {}
         subs.update(self.evaluate.sub_vertices)
@@ -82,12 +84,10 @@ class NewtonEvaluate:
 class NewtonLinearCCode:
     def __init__(self, newton):
         self.newton = newton
-        
 
     def residual(self):
         ndim = self.newton.geom.ndim
         expand_opt = create_expand_pow_optimization(99)
-
 
         component_name = ("x", "y", "z")
         docs_params = []
@@ -100,9 +100,7 @@ class NewtonLinearCCode:
         for vi, vx in enumerate(self.newton.geom.vertices):
             for dimx in range(ndim):
                 n = f"v{vi}{dimx}"
-                args.append(
-                    f"const REAL {n}"
-                )
+                args.append(f"const REAL {n}")
                 docs_params.append(f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component.")
 
         for dimx in range(ndim):
@@ -117,7 +115,7 @@ class NewtonLinearCCode:
 
         params = "\n * ".join(docs_params)
         x_description = "\n * ".join(self.newton.geom.x_description.split("\n"))
-        
+
         docstring = f"""
 /**
  * Compute and return F evaluation where
@@ -134,16 +132,16 @@ class NewtonLinearCCode:
  * {params}
  */
 """
-        
+
         args_string = ",\n".join(args)
         name = self.newton.geom.name
         s = f"""inline void newton_f_{name}(
 {args_string}
 )"""
-        
+
         instr = ["{"]
         steps = [fx for fx in self.newton.f]
-        cse_list = cse(steps, optimizations='basic')
+        cse_list = cse(steps, optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
             rhs = expand_opt(cse_expr[1])
@@ -151,24 +149,18 @@ class NewtonLinearCCode:
             instr.append(expr)
 
         for dimx in range(ndim):
-            instr.append(
-                f"const REAL f{dimx}_tmp = {cse_list[1][dimx]};"
-            )
+            instr.append(f"const REAL f{dimx}_tmp = {cse_list[1][dimx]};")
         for dimx in range(ndim):
-            instr.append(
-                f"*f{dimx} = f{dimx}_tmp;"
-            )
+            instr.append(f"*f{dimx} = f{dimx}_tmp;")
 
-        s+="\n  ".join(instr)
+        s += "\n  ".join(instr)
         s += "\n}\n"
 
         return docstring + s
 
-
     def step(self):
         ndim = self.newton.geom.ndim
         expand_opt = create_expand_pow_optimization(99)
-
 
         component_name = ("x", "y", "z")
         docs_params = []
@@ -181,9 +173,7 @@ class NewtonLinearCCode:
         for vi, vx in enumerate(self.newton.geom.vertices):
             for dimx in range(ndim):
                 n = f"v{vi}{dimx}"
-                args.append(
-                    f"const REAL {n}"
-                )
+                args.append(f"const REAL {n}")
                 docs_params.append(f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component.")
 
         for dimx in range(ndim):
@@ -199,11 +189,13 @@ class NewtonLinearCCode:
         for dimx in range(ndim):
             n = f"xin{dimx}"
             args.append(f"REAL * {n}")
-            docs_params.append(f"@param[in, out] {n} Output local coordinate iteration, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in, out] {n} Output local coordinate iteration, {component_name[dimx]} component."
+            )
 
         params = "\n * ".join(docs_params)
         x_description = "\n * ".join(self.newton.geom.x_description.split("\n"))
-        
+
         docstring = f"""
 /**
  * Perform a Newton method update step for a Newton iteration that determines
@@ -229,15 +221,15 @@ class NewtonLinearCCode:
  * {params}
  */
 """
-        
+
         args_string = ",\n".join(args)
         name = self.newton.geom.name
         s = f"""inline void newton_step_{name}(
 {args_string}
 )"""
-        
+
         instr = ["{"]
-        cse_list = cse(self.newton.step_components, optimizations='basic')
+        cse_list = cse(self.newton.step_components, optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
             rhs = expand_opt(cse_expr[1])
@@ -245,18 +237,13 @@ class NewtonLinearCCode:
             instr.append(expr)
 
         for dimx in range(ndim):
-            instr.append(
-                f"const REAL xin{dimx}_tmp = {cse_list[1][dimx]};"
-            )
+            instr.append(f"const REAL xin{dimx}_tmp = {cse_list[1][dimx]};")
         for dimx in range(ndim):
-            instr.append(
-                f"*xin{dimx} = xin{dimx}_tmp;"
-            )
-        s+="\n  ".join(instr)
+            instr.append(f"*xin{dimx} = xin{dimx}_tmp;")
+        s += "\n  ".join(instr)
         s += "\n}\n"
 
         return docstring + s
-
 
 
 class LinearGeomEvaluate(SymbolicCommon):
@@ -264,14 +251,12 @@ class LinearGeomEvaluate(SymbolicCommon):
         SymbolicCommon.__init__(self, geom)
         LinearEvaluateCommon.__init__(self, geom, vertices)
 
-
     def x(self, xi):
         subs = {}
         for dimx in range(self.ndim):
             subs[self.xi[dimx]] = xi[dimx]
         subs.update(self.sub_vertices)
         return [float(fx) for fx in self._x.evalf(subs=subs)]
-
 
     def f(self, xi, phys):
         subs = {}
@@ -297,18 +282,18 @@ X(xi) = 0.25 * v0 * (1 - xi_0) * (1 - xi_1) +
 """
 
     def get_x(self, xi):
-        
+
         v = self.vertices
         x = Matrix(
             [
-                0.25 * v[0][0] * (1 - xi[0]) * (1 - xi[1]) + \
-                0.25 * v[1][0] * (1 + xi[0]) * (1 - xi[1]) + \
-                0.25 * v[3][0] * (1 - xi[0]) * (1 + xi[1]) + \
-                0.25 * v[2][0] * (1 + xi[0]) * (1 + xi[1]),
-                0.25 * v[0][1] * (1 - xi[0]) * (1 - xi[1]) + \
-                0.25 * v[1][1] * (1 + xi[0]) * (1 - xi[1]) + \
-                0.25 * v[3][1] * (1 - xi[0]) * (1 + xi[1]) + \
-                0.25 * v[2][1] * (1 + xi[0]) * (1 + xi[1])
+                0.25 * v[0][0] * (1 - xi[0]) * (1 - xi[1])
+                + 0.25 * v[1][0] * (1 + xi[0]) * (1 - xi[1])
+                + 0.25 * v[3][0] * (1 - xi[0]) * (1 + xi[1])
+                + 0.25 * v[2][0] * (1 + xi[0]) * (1 + xi[1]),
+                0.25 * v[0][1] * (1 - xi[0]) * (1 - xi[1])
+                + 0.25 * v[1][1] * (1 + xi[0]) * (1 - xi[1])
+                + 0.25 * v[3][1] * (1 - xi[0]) * (1 + xi[1])
+                + 0.25 * v[2][1] * (1 + xi[0]) * (1 + xi[1]),
             ]
         )
         return x
@@ -319,64 +304,54 @@ X(xi) = 0.25 * v0 * (1 - xi_0) * (1 - xi_1) +
         return f
 
 
-
-
 if __name__ == "__main__":
 
     quad = LinearQuad()
-    
+
     vertices_ref = (
         (-1.0, -1.0),
-        ( 1.0, -1.0),
-        ( 1.0, 1.0),
+        (1.0, -1.0),
+        (1.0, 1.0),
         (-1.0, 1.0),
     )
     quad_ref = LinearGeomEvaluate(quad, vertices_ref)
-    
-    
-    
+
     for vx in vertices_ref:
         to_test = quad_ref.x(vx)
         correct = vx
-        assert np.linalg.norm(np.array(correct).ravel() - np.array(to_test).ravel(), np.inf) < 1.0E-15
+        assert np.linalg.norm(np.array(correct).ravel() - np.array(to_test).ravel(), np.inf) < 1.0e-15
         to_test = quad_ref.f(vx, vx)
-        assert np.linalg.norm(np.array(to_test).ravel(), np.inf) < 1.0E-15
-    
-    
+        assert np.linalg.norm(np.array(to_test).ravel(), np.inf) < 1.0e-15
+
     vertices_test = (
         (-3.0, -2.0),
-        ( 1.0, -1.0),
-        ( 2.0, 2.0),
+        (1.0, -1.0),
+        (2.0, 2.0),
         (-1.0, 4.0),
     )
     quad_test = LinearGeomEvaluate(quad, vertices_test)
     quad_newton = Newton(quad)
-    
+
     quad_newton_ccode = NewtonLinearCCode(quad_newton)
-    
+
     print(quad_newton_ccode.residual())
     print(quad_newton_ccode.step())
-    
-    
+
     quad_newton_evaluate = NewtonEvaluate(quad_newton, quad_test)
-    
-    
+
     xi_correct0 = -0.9
     xi_correct1 = 0.8
     xi_correct = (xi_correct0, xi_correct1)
     phys = quad_test.x(xi_correct)
     residual, fv = quad_newton_evaluate.residual(xi_correct, phys)
-    assert residual < 1.0E-15
-    
-    
+    assert residual < 1.0e-15
+
     xi = [0.0, 0.0]
     for stepx in range(5):
         residual, fv = quad_newton_evaluate.residual(xi, phys)
         xin = quad_newton_evaluate.step(xi, phys, fv)
         xi[0] = xin[0]
         xi[1] = xin[1]
-    
-    assert abs(xi[0] - xi_correct[0]) < 1.0E-14
-    assert abs(xi[1] - xi_correct[1]) < 1.0E-14
-    
-    
+
+    assert abs(xi[0] - xi_correct[0]) < 1.0e-14
+    assert abs(xi[1] - xi_correct[1]) < 1.0e-14
