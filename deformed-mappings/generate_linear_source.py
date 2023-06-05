@@ -8,7 +8,8 @@ import quad
 from newton_generation import *
 
 if len(sys.argv) < 2 or "-h" in sys.argv:
-    print("""
+    print(
+        """
 This is a wrapper script that generates the implementations to compute Newton
 steps and residuals for 3D linear Nektar++ geometry objects (and 2D
 linear quadrilaterals). The script is called with a single argument like
@@ -16,7 +17,8 @@ linear quadrilaterals). The script is called with a single argument like
 python generate_linear_source.py <output_dir>
 
 where <output_dir> is the output directory where generated code will be placed.
-""")
+"""
+    )
     quit()
 
 

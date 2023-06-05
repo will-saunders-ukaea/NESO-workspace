@@ -1,4 +1,5 @@
 from sympy import *
+import sympy.printing.c
 from sympy.codegen.rewriting import create_expand_pow_optimization
 import numpy as np
 
@@ -100,10 +101,12 @@ class NewtonLinearCCode:
     def __init__(self, newton):
         self.newton = newton
 
+    def to_c(self, rhs):
+        expand_opt = create_expand_pow_optimization(99)
+        return sympy.printing.c.ccode(expand_opt(rhs), standard="C99")
+
     def residual(self):
         ndim = self.newton.geom.ndim
-        expand_opt = create_expand_pow_optimization(99)
-
         component_name = ("x", "y", "z")
         docs_params = []
         args = []
@@ -159,12 +162,13 @@ class NewtonLinearCCode:
         cse_list = cse(steps, optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
-            rhs = expand_opt(cse_expr[1])
+            rhs = self.to_c(cse_expr[1])
             expr = f"const REAL {lhs} = {rhs};"
             instr.append(expr)
 
         for dimx in range(ndim):
-            instr.append(f"const REAL f{dimx}_tmp = {cse_list[1][dimx]};")
+            rhs = self.to_c(cse_list[1][dimx])
+            instr.append(f"const REAL f{dimx}_tmp = {rhs};")
         for dimx in range(ndim):
             instr.append(f"*f{dimx} = f{dimx}_tmp;")
 
@@ -175,7 +179,6 @@ class NewtonLinearCCode:
 
     def step(self):
         ndim = self.newton.geom.ndim
-        expand_opt = create_expand_pow_optimization(99)
 
         component_name = ("x", "y", "z")
         docs_params = []
@@ -255,26 +258,28 @@ class NewtonLinearCCode:
         cse_list = cse(J_steps, optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
-            rhs = expand_opt(cse_expr[1])
+            rhs = self.to_c(cse_expr[1])
             expr = f"const REAL {lhs} = {rhs};"
             instr.append(expr)
 
         counter = 0
         for rowx in range(ndim):
             for colx in range(ndim):
-                expr = f"const REAL J{rowx}{colx} = {cse_list[1][counter]};"
+                rhs = self.to_c(cse_list[1][counter])
+                expr = f"const REAL J{rowx}{colx} = {rhs};"
                 counter += 1
                 instr.append(expr)
 
         cse_list = cse(self.newton.step_components, numbered_symbols("y"), optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
-            rhs = expand_opt(cse_expr[1])
+            rhs = self.to_c(cse_expr[1])
             expr = f"const REAL {lhs} = {rhs};"
             instr.append(expr)
 
         for dimx in range(ndim):
-            instr.append(f"const REAL xin{dimx}_tmp = {cse_list[1][dimx]};")
+            rhs = self.to_c(cse_list[1][dimx])
+            instr.append(f"const REAL xin{dimx}_tmp = {rhs};")
         for dimx in range(ndim):
             instr.append(f"*xin{dimx} = xin{dimx}_tmp;")
         s += "\n  ".join(instr)
