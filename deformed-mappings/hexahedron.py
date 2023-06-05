@@ -144,7 +144,7 @@ def self_test():
     assert abs(xi[2] - xi_correct[2]) < 1.0e-14
 
 
-def get_type():
+def get_geom_type():
     self_test()
     return LinearHex
 

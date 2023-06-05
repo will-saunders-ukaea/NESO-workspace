@@ -1,6 +1,7 @@
 import sys
 import os
 import prism
+import pyramid
 import tetrahedron
 import hexahedron
 import quad
@@ -8,6 +9,7 @@ from newton_generation import *
 
 geom_types = (
     prism.get_geom_type(),
+    pyramid.get_geom_type(),
     tetrahedron.get_geom_type(),
     hexahedron.get_geom_type(),
     quad.get_geom_type(),
@@ -25,6 +27,10 @@ for gx in geom_ccode:
 */
 #ifndef __GENERATED_{NAMESPACE}_LINEAR_NEWTON_H__
 #define __GENERATED_{NAMESPACE}_LINEAR_NEWTON_H__
+
+#include <neso_particles.hpp>
+using namespace NESO;
+using namespace NESO::Particles;
 
 namespace NESO {{
 namespace {NAMESPACE} {{
@@ -53,3 +59,17 @@ for filename in output.keys():
     p = os.path.join(output_dir, filename)
     with open(p, "w") as fh:
         fh.write(output[filename])
+
+
+includes = "\n".join([f'#include "{s}"' for s in output.keys()])
+
+with open(os.path.join(output_dir, "linear_newton_implementation.hpp"), "w") as fh:
+    fh.write(
+        f"""#ifndef __GENERATED_LINEAR_NEWTON_IMPLEMENTATIONS_H__
+#define __GENERATED_LINEAR_NEWTON_IMPLEMENTATIONS_H__
+
+{includes}
+
+#endif
+"""
+    )

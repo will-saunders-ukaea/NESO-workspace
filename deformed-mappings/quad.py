@@ -82,7 +82,7 @@ def self_test():
     assert abs(xi[1] - xi_correct[1]) < 1.0e-14
 
 
-def get_type():
+def get_geom_type():
     self_test()
     return LinearQuad
 
