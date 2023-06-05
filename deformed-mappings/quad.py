@@ -7,13 +7,14 @@ class LinearQuad(LinearBase):
         num_vertices = 4
         ndim = 2
         name = "linear_2d"
+        namespace = "Quad"
         x_description = """
 X(xi) = 0.25 * v0 * (1 - xi_0) * (1 - xi_1) + 
         0.25 * v1 * (1 + xi_0) * (1 - xi_1) + 
         0.25 * v3 * (1 - xi_0) * (1 + xi_1) + 
         0.25 * v2 * (1 + xi_0) * (1 + xi_1)
 """
-        LinearBase.__init__(self, num_vertices, ndim, name, x_description)
+        LinearBase.__init__(self, num_vertices, ndim, name, namespace, x_description)
 
     def get_x(self, xi):
 
@@ -33,7 +34,7 @@ X(xi) = 0.25 * v0 * (1 - xi_0) * (1 - xi_1) +
         return x
 
 
-if __name__ == "__main__":
+def self_test():
 
     quad = LinearQuad()
 
@@ -80,6 +81,11 @@ if __name__ == "__main__":
     assert abs(xi[0] - xi_correct[0]) < 1.0e-14
     assert abs(xi[1] - xi_correct[1]) < 1.0e-14
 
-    quad_newton_ccode = NewtonLinearCCode(quad_newton)
-    print(quad_newton_ccode.residual())
-    print(quad_newton_ccode.step())
+
+def get_type():
+    self_test()
+    return LinearQuad
+
+
+if __name__ == "__main__":
+    self_test()

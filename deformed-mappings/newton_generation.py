@@ -305,13 +305,14 @@ class LinearGeomEvaluate(SymbolicCommon):
 
 
 class LinearBase:
-    def __init__(self, num_vertices, ndim, name, x_description):
+    def __init__(self, num_vertices, ndim, name, namespace, x_description):
         self.num_vertices = num_vertices
         self.ndim = ndim
         self.vertices = [
             make_vector(*["v{}{}".format(vx, dx) for dx in range(self.ndim)]) for vx in range(self.num_vertices)
         ]
         self.name = name
+        self.namespace = namespace
         self.x_description = x_description
 
     def get_f(self, xi, phys):
