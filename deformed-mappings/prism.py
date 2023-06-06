@@ -9,15 +9,17 @@ class LinearPrism(LinearBase):
         name = "linear_3d"
         namespace = "Prism"
         x_description = """
-
-X(xi) = A ((xi_0, xi_2)^T - [-1, -1]^T) + a0
+X(xi) = c_0 v_0 + c_1 v_1 + c_2 v_2 + c_3 v_3 + c_4 v_4 + c_5 v_5
 
 where
 
-A = (1/2) [a1 - a0, a4 - a0],
-a0 = (1/2) * (v3 - v0) * (xi_1 + 1) + v0,
-a1 = (1/2) * (v2 - v1) * (xi_1 + 1) + v1,
-a4 = (1/2) * (v5 - v4) * (xi_1 + 1) + v4,
+eta_0 = 2 * ((1 + xi_0) / (1 - xi_2)) - 1
+c_0 = 0.125 * (1 - eta_0) * (1 - xi_1) * (1 - xi_2)
+c_1 = 0.125 * (1 + eta_0) * (1 - xi_1) * (1 - xi_2)
+c_2 = 0.125 * (1 + eta_0) * (1 + xi_1) * (1 - xi_2)
+c_3 = 0.125 * (1 - eta_0) * (1 + xi_1) * (1 - xi_2)
+c_4 = 0.25 * (1 - xi_1) * (1 + xi_2)
+c_5 = 0.25 * (1 + xi_1) * (1 + xi_2)
 """
         LinearBase.__init__(self, num_vertices, ndim, name, namespace, x_description)
 
@@ -25,18 +27,16 @@ a4 = (1/2) * (v5 - v4) * (xi_1 + 1) + v4,
 
         v = self.vertices
 
-        a0 = 0.5 * (v[3] - v[0]) * (xi[1] + 1.0) + v[0]
-        a1 = 0.5 * (v[2] - v[1]) * (xi[1] + 1.0) + v[1]
-        a4 = 0.5 * (v[5] - v[4]) * (xi[1] + 1.0) + v[4]
+        # note this collapases along x whilst the textbook collapses along y
+        eta0 = 2 * ((1 + xi[0]) / (1 - xi[2])) - 1
+        c0 = 0.125 * (1 - eta0) * (1 - xi[1]) * (1 - xi[2])
+        c1 = 0.125 * (1 + eta0) * (1 - xi[1]) * (1 - xi[2])
+        c2 = 0.125 * (1 + eta0) * (1 + xi[1]) * (1 - xi[2])
+        c3 = 0.125 * (1 - eta0) * (1 + xi[1]) * (1 - xi[2])
+        c4 = 0.25 * (1 - xi[1]) * (1 + xi[2])
+        c5 = 0.25 * (1 + xi[1]) * (1 + xi[2])
 
-        A = 0.5 * Matrix(
-            [[a1[0] - a0[0], a4[0] - a0[0]], [a1[1] - a0[1], a4[1] - a0[1]], [a1[2] - a0[2], a4[2] - a0[2]]]
-        )
-
-        s = Matrix([-1, -1])
-        xi_t = Matrix([xi[0], xi[2]])
-
-        x = A @ (xi_t - s) + a0
+        x = c0 * v[0] + c1 * v[1] + c2 * v[2] + c3 * v[3] + c4 * v[4] + c5 * v[5]
 
         return x
 

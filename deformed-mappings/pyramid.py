@@ -9,19 +9,20 @@ class LinearPyramid(LinearBase):
         name = "linear_3d"
         namespace = "Pyramid"
         x_description = """
+X(xi) = c_0 v_0 + c_1 v_1 + c_2 v_2 + c_3 v_3 + c_4 v_4 + c_5 v_5
 
-max_width = -xi_2 + 1.0
-b0 = ((xi0 + 1.0) / max_width) * 2.0 - 1.0
-b1 = ((xi1 + 1.0) / max_width) * 2.0 - 1.0
-a0 = 0.5 * (v4 - v0) * (xi_2 + 1.0) + v0
-a1 = 0.5 * (v4 - v1) * (xi_2 + 1.0) + v1
-a2 = 0.5 * (v4 - v2) * (xi_2 + 1.0) + v2
-a3 = 0.5 * (v4 - v3) * (xi_2 + 1.0) + v3
+where 
+d_2 = 1 - xi_2
+eta_0 = 2 * ((1 + xi_0) / d_2) - 1
+eta_1 = 2 * ((1 + xi_1) / d_2) - 1
+eta_2 = xi_2
 
-X(xi) = 0.25 * a0 * (1 - b0) * (1 - b1) +
-        0.25 * a1 * (1 + b0) * (1 - b1) +
-        0.25 * a2 * (1 + b0) * (1 + b1) +
-        0.25 * a3 * (1 - b0) * (1 + b1)
+# Note vertices C and D are swapped relative to the textbook.
+c0 = 0.125 * (1 - eta_0) * (1 - eta_1) * (1 - eta_2)
+c1 = 0.125 * (1 + eta_0) * (1 - eta_1) * (1 - eta_2)
+c2 = 0.125 * (1 + eta_0) * (1 + eta_1) * (1 - eta_2)
+c3 = 0.125 * (1 - eta_0) * (1 + eta_1) * (1 - eta_2)
+c4 = (1 + eta_2) * 0.5
 """
         LinearBase.__init__(self, num_vertices, ndim, name, namespace, x_description)
 
@@ -29,20 +30,19 @@ X(xi) = 0.25 * a0 * (1 - b0) * (1 - b1) +
 
         v = self.vertices
 
-        max_width = -xi[2] + 1.0
-        b0 = ((xi[0] + 1.0) / max_width) * 2.0 - 1.0
-        b1 = ((xi[1] + 1.0) / max_width) * 2.0 - 1.0
-        a0 = 0.5 * (v[4] - v[0]) * (xi[2] + 1.0) + v[0]
-        a1 = 0.5 * (v[4] - v[1]) * (xi[2] + 1.0) + v[1]
-        a2 = 0.5 * (v[4] - v[2]) * (xi[2] + 1.0) + v[2]
-        a3 = 0.5 * (v[4] - v[3]) * (xi[2] + 1.0) + v[3]
+        d2 = 1 - xi[2]
+        eta0 = 2 * ((1 + xi[0]) / d2) - 1
+        eta1 = 2 * ((1 + xi[1]) / d2) - 1
+        eta2 = xi[2]
 
-        x = (
-            0.25 * a0 * (1 - b0) * (1 - b1)
-            + 0.25 * a1 * (1 + b0) * (1 - b1)
-            + 0.25 * a2 * (1 + b0) * (1 + b1)
-            + 0.25 * a3 * (1 - b0) * (1 + b1)
-        )
+        # Note vertices C and D are swapped relative to the textbook.
+        c0 = 0.125 * (1 - eta0) * (1 - eta1) * (1 - eta2)
+        c1 = 0.125 * (1 + eta0) * (1 - eta1) * (1 - eta2)
+        c2 = 0.125 * (1 + eta0) * (1 + eta1) * (1 - eta2)
+        c3 = 0.125 * (1 - eta0) * (1 + eta1) * (1 - eta2)
+        c4 = (1 + eta2) * 0.5
+
+        x = c0 * v[0] + c1 * v[1] + c2 * v[2] + c3 * v[3] + c4 * v[4]
 
         return x
 
