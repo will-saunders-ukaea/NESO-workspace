@@ -29,10 +29,18 @@ c_5 = 0.25 * (1 + xi_1) * (1 + xi_2)
 
         # note this collapases along x whilst the textbook collapses along y
         eta0 = 2 * ((1 + xi[0]) / (1 - xi[2])) - 1
-        c0 = 0.125 * (1 - eta0) * (1 - xi[1]) * (1 - xi[2])
-        c1 = 0.125 * (1 + eta0) * (1 - xi[1]) * (1 - xi[2])
-        c2 = 0.125 * (1 + eta0) * (1 + xi[1]) * (1 - xi[2])
-        c3 = 0.125 * (1 - eta0) * (1 + xi[1]) * (1 - xi[2])
+        a0 = (1 - eta0) * (1 - xi[2])
+        a1 = (1 + eta0) * (1 - xi[2])
+
+        a0_no_singularity = -2 * xi[2] - 2 * xi[0]
+        a1_no_singularity = 2 + 2 * xi[0]
+        assert simplify(a0_no_singularity - a0) == 0
+        assert simplify(a1_no_singularity - a1) == 0
+
+        c0 = 0.125 * (1 - xi[1]) * a0_no_singularity
+        c1 = 0.125 * (1 - xi[1]) * a1
+        c2 = 0.125 * (1 + xi[1]) * a1
+        c3 = 0.125 * (1 + xi[1]) * a0_no_singularity
         c4 = 0.25 * (1 - xi[1]) * (1 + xi[2])
         c5 = 0.25 * (1 + xi[1]) * (1 + xi[2])
 
