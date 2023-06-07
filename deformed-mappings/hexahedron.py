@@ -7,7 +7,7 @@ class LinearHex(LinearBase):
         num_vertices = 8
         ndim = 3
         name = "linear_3d"
-        namespace = "Hexagon"
+        namespace = "Hexahedron"
         x_description = """
 X(xi) = (1/8) * v0 * (1 - xi_0) * (1 - xi_1) * (1 - xi_2) + 
         (1/8) * v1 * (1 + xi_0) * (1 - xi_1) * (1 - xi_2) + 
