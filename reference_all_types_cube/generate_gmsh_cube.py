@@ -3,8 +3,9 @@ import sys
 import numpy as np
 
 # small values generate a more refined mesh
-lc = 0.7
-perturb = True
+lc = 0.5
+perturb_max = 0.0
+#perturb_max = 0.08
 
 
 class EntityMap:
@@ -136,10 +137,9 @@ for z in volumes_to_be_structured:
 # We finally generate the mesh
 gmsh.model.mesh.generate(3)
 
-
 # perturb inner points
+perturb = perturb_max > 0.0
 if perturb:
-    perturb_max = 0.1
 
     def get_perturbation(shape):
         return np.random.uniform(-perturb_max, perturb_max, size=shape)
@@ -166,8 +166,8 @@ if perturb:
 
 
 # save the mesh
-mod = "perturbed" if perturb else ""
-gmsh.write(f"mixed_ref_cube_{lc}_{mod}.msh")
+mod = "_perturbed" if perturb else ""
+gmsh.write(f"mixed_ref_cube_{lc}{mod}.msh")
 # Launch the GUI to see the results:
 if "--visualise" in sys.argv:
     gmsh.fltk.run()
