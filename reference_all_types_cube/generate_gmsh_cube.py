@@ -1,19 +1,24 @@
 import gmsh
 import sys
+import numpy as np
 
 # small values generate a more refined mesh
-lc = 0.2
+lc = 0.7
+perturb = True
+
 
 class EntityMap:
     def __init__(self):
         self.map = {}
         self.next = 1
+
     def __getitem__(self, key):
         if key not in self.map.keys():
             self.map[key] = self.next
             self.next += 1
         return self.map[key]
-    
+
+
 pm = EntityMap()
 lm = EntityMap()
 cm = EntityMap()
@@ -32,9 +37,9 @@ zlevels = [-1.0, -0.6, -0.2, 0.2, 0.6, 1.0]
 # add the horizontal planes
 for z, zc in enumerate(zlevels):
     gmsh.model.geo.addPoint(-1.0, -1.0, zc, lc, pm[f"{z}SW"])
-    gmsh.model.geo.addPoint( 1.0, -1.0, zc, lc, pm[f"{z}SE"])
-    gmsh.model.geo.addPoint( 1.0,  1.0, zc, lc, pm[f"{z}NE"])
-    gmsh.model.geo.addPoint(-1.0,  1.0, zc, lc, pm[f"{z}NW"])
+    gmsh.model.geo.addPoint(1.0, -1.0, zc, lc, pm[f"{z}SE"])
+    gmsh.model.geo.addPoint(1.0, 1.0, zc, lc, pm[f"{z}NE"])
+    gmsh.model.geo.addPoint(-1.0, 1.0, zc, lc, pm[f"{z}NW"])
     gmsh.model.geo.addLine(pm[f"{z}SW"], pm[f"{z}SE"], lm[f"{z}S"])
     gmsh.model.geo.addLine(pm[f"{z}SE"], pm[f"{z}NE"], lm[f"{z}E"])
     gmsh.model.geo.addLine(pm[f"{z}NE"], pm[f"{z}NW"], lm[f"{z}N"])
@@ -67,15 +72,7 @@ for z in range(5):
 # add the volumes
 for z in range(5):
     gmsh.model.geo.addSurfaceLoop(
-        [
-            sm[f"{z}P"],
-            sm[f"{z+1}P"],
-            sm[f"{z}N"],
-            sm[f"{z}W"],
-            sm[f"{z}S"],
-            sm[f"{z}E"]
-        ],
-        slm[f"{z}"]
+        [sm[f"{z}P"], sm[f"{z+1}P"], sm[f"{z}N"], sm[f"{z}W"], sm[f"{z}S"], sm[f"{z}E"]], slm[f"{z}"]
     )
     gmsh.model.geo.addVolume([slm[f"{z}"]], vm[f"{z}"])
 
@@ -136,11 +133,43 @@ for z in volumes_to_be_structured:
     gmsh.model.mesh.set_transfinite_volume(z)
 
 
-# We finally generate and save the mesh:
+# We finally generate the mesh
 gmsh.model.mesh.generate(3)
-gmsh.write(f"mixed_ref_cube_{lc}.msh")
+
+
+# perturb inner points
+if perturb:
+    perturb_max = 0.1
+
+    def get_perturbation(shape):
+        return np.random.uniform(-perturb_max, perturb_max, size=shape)
+
+    def on_boundary(vertex):
+        v0 = abs(abs(vertex[0]) - 1) < 1e-8
+        v1 = abs(abs(vertex[1]) - 1) < 1e-8
+        v2 = abs(abs(vertex[2]) - 1) < 1e-8
+        return v0 or v1 or v2
+
+    def perturb_node(n):
+        v = n[0]
+        if not on_boundary(v):
+            t = get_perturbation(v.shape)
+            v += t
+        return v, n[1], n[2], n[3]
+
+    vertex_ids, _, _ = gmsh.model.mesh.get_nodes()
+
+    for vx in vertex_ids:
+        n = gmsh.model.mesh.get_node(vx)
+        nn = perturb_node(n)
+        gmsh.model.mesh.set_node(vx, nn[0], nn[1])
+
+
+# save the mesh
+mod = "perturbed" if perturb else ""
+gmsh.write(f"mixed_ref_cube_{lc}_{mod}.msh")
 # Launch the GUI to see the results:
-if '--visualise' in sys.argv:
+if "--visualise" in sys.argv:
     gmsh.fltk.run()
 
 gmsh.finalize()
