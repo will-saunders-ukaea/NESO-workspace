@@ -1,0 +1,32 @@
+====
+Starting job 6206551 at Thu  4 May 11:36:52 BST 2023 for user dc-saun1.
+Running on nodes: b[101-104]
+====
+Using hipSYCL OpenMP host device
+Kernel type: GPU
+Particle count  : 4000000
+Particle Weight : 2.63189e-05
+step: 0 0.027656
+step: 10 0.0199943
+step: 20 0.0192443
+step: 30 0.0189458
+step: 40 0.0188632
+step: 50 0.0187558
+step: 60 0.0186369
+step: 70 0.0185758
+step: 80 0.0185008
+step: 90 0.0184659
+step: 100 0.0184348
+step: 110 0.018406
+step: 120 0.018368
+step: 130 0.0183412
+step: 140 0.0183124
+step: 150 0.0182977
+step: 160 0.0182708
+step: 170 0.0182547
+step: 180 0.018249
+step: 190 0.0182277
+Time taken: 3.64301
+Time taken per step: 0.018215
+BENCHMARK Time taken: 1.79903
+BENCHMARK Time taken per step: 0.0179903

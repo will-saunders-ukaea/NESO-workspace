@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2" PARTITION="115">
+        <VERTEX>
+            <V ID="354">3.12500000e-01 7.50000000e-01 0.00000000e+00</V>
+            <V ID="355">3.12500000e-01 7.81250000e-01 0.00000000e+00</V>
+            <V ID="356">3.12500000e-01 8.12500000e-01 0.00000000e+00</V>
+            <V ID="357">3.12500000e-01 8.43750000e-01 0.00000000e+00</V>
+            <V ID="358">3.12500000e-01 8.75000000e-01 0.00000000e+00</V>
+            <V ID="387">3.43750000e-01 7.50000000e-01 0.00000000e+00</V>
+            <V ID="388">3.43750000e-01 7.81250000e-01 0.00000000e+00</V>
+            <V ID="389">3.43750000e-01 8.12500000e-01 0.00000000e+00</V>
+            <V ID="390">3.43750000e-01 8.43750000e-01 0.00000000e+00</V>
+            <V ID="391">3.43750000e-01 8.75000000e-01 0.00000000e+00</V>
+            <V ID="420">3.75000000e-01 7.50000000e-01 0.00000000e+00</V>
+            <V ID="421">3.75000000e-01 7.81250000e-01 0.00000000e+00</V>
+            <V ID="422">3.75000000e-01 8.12500000e-01 0.00000000e+00</V>
+            <V ID="423">3.75000000e-01 8.43750000e-01 0.00000000e+00</V>
+            <V ID="424">3.75000000e-01 8.75000000e-01 0.00000000e+00</V>
+        </VERTEX>
+        <EDGE>
+            <E ID="666">354 355</E>
+            <E ID="668">355 356</E>
+            <E ID="670">356 357</E>
+            <E ID="672">357 358</E>
+            <E ID="730">387 354</E>
+            <E ID="731">387 388</E>
+            <E ID="732">388 355</E>
+            <E ID="733">388 389</E>
+            <E ID="734">389 356</E>
+            <E ID="735">389 390</E>
+            <E ID="736">390 357</E>
+            <E ID="737">390 391</E>
+            <E ID="738">391 358</E>
+            <E ID="795">420 387</E>
+            <E ID="796">420 421</E>
+            <E ID="797">421 388</E>
+            <E ID="798">421 422</E>
+            <E ID="799">422 389</E>
+            <E ID="800">422 423</E>
+            <E ID="801">423 390</E>
+            <E ID="802">423 424</E>
+            <E ID="803">424 391</E>
+        </EDGE>
+        <ELEMENT>
+            <Q ID="344">730 731 732 666</Q>
+            <Q ID="345">732 733 734 668</Q>
+            <Q ID="346">734 735 736 670</Q>
+            <Q ID="347">736 737 738 672</Q>
+            <Q ID="376">795 796 797 731</Q>
+            <Q ID="377">797 798 799 733</Q>
+            <Q ID="378">799 800 801 735</Q>
+            <Q ID="379">801 802 803 737</Q>
+        </ELEMENT>
+        <CURVED />
+        <COMPOSITE>
+            <C ID="1"> Q[344-347,376-379] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <CONDITIONS>
+        <SOLVERINFO>
+            <I PROPERTY="EQTYPE" VALUE="PoissonPIC" />
+            <I PROPERTY="Projection" VALUE="Continuous" />
+        </SOLVERINFO>
+        <GLOBALSYSSOLNINFO>
+            <V VAR="u">
+                <I PROPERTY="GlobalSysSoln" VALUE="IterativeStaticCond" />
+                <I PROPERTY="IterativeSolverTolerance" VALUE="1e-8" />
+            </V>
+        </GLOBALSYSSOLNINFO>
+        <PARAMETERS>
+            <P>Lambda = 0.0</P>
+            <P>epsilon = -1.0</P>
+            <P>num_particles_total = 16000000</P>
+            <P>num_particles_per_cell = -1</P>
+            <P>particle_time_step = 0.001</P>
+            <P>particle_num_time_steps = 400</P>
+            <P>particle_num_write_particle_steps = 0</P>
+            <P>particle_num_write_field_energy_steps = 0</P>
+            <P>particle_num_write_field_steps = 0</P>
+            <P>particle_num_print_steps = 10</P>
+            <P>particle_distribution_position = 2</P>
+            <P>particle_initial_velocity = 1.0</P>
+            <P>particle_charge_density = 105.27578027828649</P>
+            <P>particle_number_density = 105.27578027828649</P>
+        </PARAMETERS>
+        <VARIABLES>
+            <V ID="0">u</V>
+            <V ID="1">rho</V>
+        </VARIABLES>
+        <BOUNDARYREGIONS />
+        <BOUNDARYCONDITIONS />
+    </CONDITIONS>
+    <COLLECTIONS>
+        <OPERATOR TYPE="BwdTrans">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="Helmholtz">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="SumFac" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTDerivBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="PhysDeriv">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+    </COLLECTIONS>
+    <EXPANSIONS>
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="rho" />
+    </EXPANSIONS>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.3.0</NektarVersion>
+            <Timestamp>04-May-2023 15:35:15</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>-v -m peralign:surf1=100:surf2=300:dir=y -m peralign:surf1=200:surf2=400:dir=x periodic_structured_cartesian_square.msh periodic_structured_cartesian_square.tmp.xml:xml:uncompress</NekMeshCommandLine>
+    </Metadata>
+</NEKTAR>

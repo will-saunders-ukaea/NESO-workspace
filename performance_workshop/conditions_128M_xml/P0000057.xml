@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2" PARTITION="57">
+        <VERTEX>
+            <V ID="542">5.00000000e-01 4.37500000e-01 0.00000000e+00</V>
+            <V ID="543">5.00000000e-01 4.68750000e-01 0.00000000e+00</V>
+            <V ID="544">5.00000000e-01 5.00000000e-01 0.00000000e+00</V>
+            <V ID="575">5.31250000e-01 4.37500000e-01 0.00000000e+00</V>
+            <V ID="576">5.31250000e-01 4.68750000e-01 0.00000000e+00</V>
+            <V ID="577">5.31250000e-01 5.00000000e-01 0.00000000e+00</V>
+            <V ID="608">5.62500000e-01 4.37500000e-01 0.00000000e+00</V>
+            <V ID="609">5.62500000e-01 4.68750000e-01 0.00000000e+00</V>
+            <V ID="610">5.62500000e-01 5.00000000e-01 0.00000000e+00</V>
+        </VERTEX>
+        <EDGE>
+            <E ID="1036">542 543</E>
+            <E ID="1038">543 544</E>
+            <E ID="1100">575 542</E>
+            <E ID="1101">575 576</E>
+            <E ID="1102">576 543</E>
+            <E ID="1103">576 577</E>
+            <E ID="1104">577 544</E>
+            <E ID="1165">608 575</E>
+            <E ID="1166">608 609</E>
+            <E ID="1167">609 576</E>
+            <E ID="1168">609 610</E>
+            <E ID="1169">610 577</E>
+        </EDGE>
+        <ELEMENT>
+            <Q ID="526">1100 1101 1102 1036</Q>
+            <Q ID="527">1102 1103 1104 1038</Q>
+            <Q ID="558">1165 1166 1167 1101</Q>
+            <Q ID="559">1167 1168 1169 1103</Q>
+        </ELEMENT>
+        <CURVED />
+        <COMPOSITE>
+            <C ID="1"> Q[526-527,558-559] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <CONDITIONS>
+        <SOLVERINFO>
+            <I PROPERTY="EQTYPE" VALUE="PoissonPIC" />
+            <I PROPERTY="Projection" VALUE="Continuous" />
+        </SOLVERINFO>
+        <GLOBALSYSSOLNINFO>
+            <V VAR="u">
+                <I PROPERTY="GlobalSysSoln" VALUE="IterativeStaticCond" />
+                <I PROPERTY="IterativeSolverTolerance" VALUE="1e-8" />
+            </V>
+        </GLOBALSYSSOLNINFO>
+        <PARAMETERS>
+            <P>Lambda = 0.0</P>
+            <P>epsilon = -1.0</P>
+            <P>num_particles_total = 128000000</P>
+            <P>num_particles_per_cell = -1</P>
+            <P>particle_time_step = 0.001</P>
+            <P>particle_num_time_steps = 400</P>
+            <P>particle_num_write_particle_steps = 0</P>
+            <P>particle_num_write_field_energy_steps = 0</P>
+            <P>particle_num_write_field_steps = 0</P>
+            <P>particle_num_print_steps = 10</P>
+            <P>particle_distribution_position = 2</P>
+            <P>particle_initial_velocity = 1.0</P>
+            <P>particle_charge_density = 105.27578027828649</P>
+            <P>particle_number_density = 105.27578027828649</P>
+        </PARAMETERS>
+        <VARIABLES>
+            <V ID="0">u</V>
+            <V ID="1">rho</V>
+        </VARIABLES>
+        <BOUNDARYREGIONS />
+        <BOUNDARYCONDITIONS />
+    </CONDITIONS>
+    <COLLECTIONS>
+        <OPERATOR TYPE="BwdTrans">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+        <OPERATOR TYPE="Helmholtz">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="NoCollection" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="SumFac" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTDerivBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="PhysDeriv">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+    </COLLECTIONS>
+    <EXPANSIONS>
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="rho" />
+    </EXPANSIONS>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.3.0</NektarVersion>
+            <Timestamp>04-May-2023 15:35:15</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>-v -m peralign:surf1=100:surf2=300:dir=y -m peralign:surf1=200:surf2=400:dir=x periodic_structured_cartesian_square.msh periodic_structured_cartesian_square.tmp.xml:xml:uncompress</NekMeshCommandLine>
+    </Metadata>
+</NEKTAR>

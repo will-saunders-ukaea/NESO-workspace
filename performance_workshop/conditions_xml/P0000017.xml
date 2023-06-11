@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2" PARTITION="17">
+        <VERTEX>
+            <V ID="8">3.12500000e-02 1.25000000e-01 0.00000000e+00</V>
+            <V ID="9">0.00000000e+00 1.25000000e-01 0.00000000e+00</V>
+            <V ID="10">3.12500000e-02 1.56250000e-01 0.00000000e+00</V>
+            <V ID="11">0.00000000e+00 1.56250000e-01 0.00000000e+00</V>
+            <V ID="12">3.12500000e-02 1.87500000e-01 0.00000000e+00</V>
+            <V ID="13">0.00000000e+00 1.87500000e-01 0.00000000e+00</V>
+            <V ID="14">3.12500000e-02 2.18750000e-01 0.00000000e+00</V>
+            <V ID="15">0.00000000e+00 2.18750000e-01 0.00000000e+00</V>
+            <V ID="16">3.12500000e-02 2.50000000e-01 0.00000000e+00</V>
+            <V ID="17">0.00000000e+00 2.50000000e-01 0.00000000e+00</V>
+            <V ID="70">6.25000000e-02 1.25000000e-01 0.00000000e+00</V>
+            <V ID="71">6.25000000e-02 1.56250000e-01 0.00000000e+00</V>
+            <V ID="72">6.25000000e-02 1.87500000e-01 0.00000000e+00</V>
+            <V ID="73">6.25000000e-02 2.18750000e-01 0.00000000e+00</V>
+            <V ID="74">6.25000000e-02 2.50000000e-01 0.00000000e+00</V>
+            <V ID="103">9.37500000e-02 1.25000000e-01 0.00000000e+00</V>
+            <V ID="104">9.37500000e-02 1.56250000e-01 0.00000000e+00</V>
+            <V ID="105">9.37500000e-02 1.87500000e-01 0.00000000e+00</V>
+            <V ID="106">9.37500000e-02 2.18750000e-01 0.00000000e+00</V>
+            <V ID="107">9.37500000e-02 2.50000000e-01 0.00000000e+00</V>
+            <V ID="136">1.25000000e-01 1.25000000e-01 0.00000000e+00</V>
+            <V ID="137">1.25000000e-01 1.56250000e-01 0.00000000e+00</V>
+            <V ID="138">1.25000000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="139">1.25000000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="140">1.25000000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="169">1.56250000e-01 1.25000000e-01 0.00000000e+00</V>
+            <V ID="170">1.56250000e-01 1.56250000e-01 0.00000000e+00</V>
+            <V ID="171">1.56250000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="172">1.56250000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="173">1.56250000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="202">1.87500000e-01 1.25000000e-01 0.00000000e+00</V>
+            <V ID="203">1.87500000e-01 1.56250000e-01 0.00000000e+00</V>
+            <V ID="204">1.87500000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="205">1.87500000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="206">1.87500000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="235">2.18750000e-01 1.25000000e-01 0.00000000e+00</V>
+            <V ID="236">2.18750000e-01 1.56250000e-01 0.00000000e+00</V>
+            <V ID="237">2.18750000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="238">2.18750000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="239">2.18750000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="268">2.50000000e-01 1.25000000e-01 0.00000000e+00</V>
+            <V ID="269">2.50000000e-01 1.56250000e-01 0.00000000e+00</V>
+            <V ID="270">2.50000000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="271">2.50000000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="272">2.50000000e-01 2.50000000e-01 0.00000000e+00</V>
+        </VERTEX>
+        <EDGE>
+            <E ID="11">8 9</E>
+            <E ID="13">8 10</E>
+            <E ID="14">10 11</E>
+            <E ID="15">11 9</E>
+            <E ID="16">10 12</E>
+            <E ID="17">12 13</E>
+            <E ID="18">13 11</E>
+            <E ID="19">12 14</E>
+            <E ID="20">14 15</E>
+            <E ID="21">15 13</E>
+            <E ID="22">14 16</E>
+            <E ID="23">16 17</E>
+            <E ID="24">17 15</E>
+            <E ID="105">70 8</E>
+            <E ID="106">70 71</E>
+            <E ID="107">71 10</E>
+            <E ID="108">71 72</E>
+            <E ID="109">72 12</E>
+            <E ID="110">72 73</E>
+            <E ID="111">73 14</E>
+            <E ID="112">73 74</E>
+            <E ID="113">74 16</E>
+            <E ID="170">103 70</E>
+            <E ID="171">103 104</E>
+            <E ID="172">104 71</E>
+            <E ID="173">104 105</E>
+            <E ID="174">105 72</E>
+            <E ID="175">105 106</E>
+            <E ID="176">106 73</E>
+            <E ID="177">106 107</E>
+            <E ID="178">107 74</E>
+            <E ID="235">136 103</E>
+            <E ID="236">136 137</E>
+            <E ID="237">137 104</E>
+            <E ID="238">137 138</E>
+            <E ID="239">138 105</E>
+            <E ID="240">138 139</E>
+            <E ID="241">139 106</E>
+            <E ID="242">139 140</E>
+            <E ID="243">140 107</E>
+            <E ID="300">169 136</E>
+            <E ID="301">169 170</E>
+            <E ID="302">170 137</E>
+            <E ID="303">170 171</E>
+            <E ID="304">171 138</E>
+            <E ID="305">171 172</E>
+            <E ID="306">172 139</E>
+            <E ID="307">172 173</E>
+            <E ID="308">173 140</E>
+            <E ID="365">202 169</E>
+            <E ID="366">202 203</E>
+            <E ID="367">203 170</E>
+            <E ID="368">203 204</E>
+            <E ID="369">204 171</E>
+            <E ID="370">204 205</E>
+            <E ID="371">205 172</E>
+            <E ID="372">205 206</E>
+            <E ID="373">206 173</E>
+            <E ID="430">235 202</E>
+            <E ID="431">235 236</E>
+            <E ID="432">236 203</E>
+            <E ID="433">236 237</E>
+            <E ID="434">237 204</E>
+            <E ID="435">237 238</E>
+            <E ID="436">238 205</E>
+            <E ID="437">238 239</E>
+            <E ID="438">239 206</E>
+            <E ID="495">268 235</E>
+            <E ID="496">268 269</E>
+            <E ID="497">269 236</E>
+            <E ID="498">269 270</E>
+            <E ID="499">270 237</E>
+            <E ID="500">270 271</E>
+            <E ID="501">271 238</E>
+            <E ID="502">271 272</E>
+            <E ID="503">272 239</E>
+        </EDGE>
+        <ELEMENT>
+            <Q ID="4">11 13 14 15</Q>
+            <Q ID="5">14 16 17 18</Q>
+            <Q ID="6">17 19 20 21</Q>
+            <Q ID="7">20 22 23 24</Q>
+            <Q ID="36">105 106 107 13</Q>
+            <Q ID="37">107 108 109 16</Q>
+            <Q ID="38">109 110 111 19</Q>
+            <Q ID="39">111 112 113 22</Q>
+            <Q ID="68">170 171 172 106</Q>
+            <Q ID="69">172 173 174 108</Q>
+            <Q ID="70">174 175 176 110</Q>
+            <Q ID="71">176 177 178 112</Q>
+            <Q ID="100">235 236 237 171</Q>
+            <Q ID="101">237 238 239 173</Q>
+            <Q ID="102">239 240 241 175</Q>
+            <Q ID="103">241 242 243 177</Q>
+            <Q ID="132">300 301 302 236</Q>
+            <Q ID="133">302 303 304 238</Q>
+            <Q ID="134">304 305 306 240</Q>
+            <Q ID="135">306 307 308 242</Q>
+            <Q ID="164">365 366 367 301</Q>
+            <Q ID="165">367 368 369 303</Q>
+            <Q ID="166">369 370 371 305</Q>
+            <Q ID="167">371 372 373 307</Q>
+            <Q ID="196">430 431 432 366</Q>
+            <Q ID="197">432 433 434 368</Q>
+            <Q ID="198">434 435 436 370</Q>
+            <Q ID="199">436 437 438 372</Q>
+            <Q ID="228">495 496 497 431</Q>
+            <Q ID="229">497 498 499 433</Q>
+            <Q ID="230">499 500 501 435</Q>
+            <Q ID="231">501 502 503 437</Q>
+        </ELEMENT>
+        <CURVED />
+        <COMPOSITE>
+            <C ID="1"> Q[4-7,36-39,68-71,100-103,132-135,164-167,196-199,228-231] </C>
+            <C ID="400"> E[15,18,21,24] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <CONDITIONS>
+        <SOLVERINFO>
+            <I PROPERTY="EQTYPE" VALUE="PoissonPIC" />
+            <I PROPERTY="Projection" VALUE="Continuous" />
+        </SOLVERINFO>
+        <GLOBALSYSSOLNINFO>
+            <V VAR="u">
+                <I PROPERTY="GlobalSysSoln" VALUE="IterativeStaticCond" />
+                <I PROPERTY="IterativeSolverTolerance" VALUE="1e-8" />
+            </V>
+        </GLOBALSYSSOLNINFO>
+        <PARAMETERS>
+            <P>Lambda = 0.0</P>
+            <P>epsilon = -1.0</P>
+            <P>num_particles_total = 8000000</P>
+            <P>num_particles_per_cell = -1</P>
+            <P>particle_time_step = 0.001</P>
+            <P>particle_num_time_steps = 400</P>
+            <P>particle_num_write_particle_steps = 0</P>
+            <P>particle_num_write_field_energy_steps = 0</P>
+            <P>particle_num_write_field_steps = 0</P>
+            <P>particle_num_print_steps = 10</P>
+            <P>particle_distribution_position = 2</P>
+            <P>particle_initial_velocity = 1.0</P>
+            <P>particle_charge_density = 105.27578027828649</P>
+            <P>particle_number_density = 105.27578027828649</P>
+        </PARAMETERS>
+        <VARIABLES>
+            <V ID="0">u</V>
+            <V ID="1">rho</V>
+        </VARIABLES>
+        <BOUNDARYREGIONS>
+            <B ID="4">C[400]</B>
+        </BOUNDARYREGIONS>
+        <BOUNDARYCONDITIONS>
+            <REGION REF="4">
+                <P VAR="u" VALUE="[2]" />
+                <P VAR="rho" VALUE="[2]" />
+            </REGION>
+        </BOUNDARYCONDITIONS>
+    </CONDITIONS>
+    <COLLECTIONS>
+        <OPERATOR TYPE="BwdTrans">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="Helmholtz">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTDerivBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="PhysDeriv">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+    </COLLECTIONS>
+    <EXPANSIONS>
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="rho" />
+    </EXPANSIONS>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.3.0</NektarVersion>
+            <Timestamp>04-May-2023 15:35:15</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>-v -m peralign:surf1=100:surf2=300:dir=y -m peralign:surf1=200:surf2=400:dir=x periodic_structured_cartesian_square.msh periodic_structured_cartesian_square.tmp.xml:xml:uncompress</NekMeshCommandLine>
+    </Metadata>
+</NEKTAR>

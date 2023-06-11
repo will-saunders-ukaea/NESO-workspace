@@ -1,0 +1,269 @@
+- Package -----------------------------.- Versions --------.- Last mod. -------
+Currently Loaded Modulefiles:
+cosma/2018                                                  2018/05/24 15:26:01
+gnu_comp/11.1.0                                             2021/06/30 10:41:57
+hipsycl-0.9.4-gcc-11.1.0-cfxbgst                            2023/04/27 13:15:08
+openmpi/4.1.4                                               2022/11/28 11:11:31
+cmake/3.25.1                                                2023/01/04 10:42:48
+boost-1.80.0-gcc-11.1.0-kxwgyuc                             2023/05/03 17:16:13
+fftw-3.3.10-gcc-11.1.0-lpkp2ev                              2023/04/27 14:28:58
+python/3.10.7                                               2022/10/04 12:04:13
+hdf5-1.12.2-gcc-11.1.0-4ovmzew                              2023/05/03 16:18:46
+nektar-5.3.0-2e0fb8-gcc-11.1.0-ooymem2                      2023/05/03 17:26:27
+googletest-1.12.1-gcc-11.1.0-25bkaph                        2023/04/27 13:16:42
+[b103.pri.cosma7.alces.network:19963] MCW rank 0 bound to socket 0[core 0[hwt 0-1]]: [BB/../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 1 bound to socket 1[core 16[hwt 0-1]]: [../../../../../../../../../../../../../../../..][BB/../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 2 bound to socket 0[core 1[hwt 0-1]]: [../BB/../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 3 bound to socket 1[core 17[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../BB/../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 7 bound to socket 1[core 19[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../BB/../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 5 bound to socket 1[core 18[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../BB/../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 6 bound to socket 0[core 3[hwt 0-1]]: [../../../BB/../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 4 bound to socket 0[core 2[hwt 0-1]]: [../../BB/../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 11 bound to socket 1[core 21[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../BB/../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 9 bound to socket 1[core 20[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../BB/../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 10 bound to socket 0[core 5[hwt 0-1]]: [../../../../../BB/../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 8 bound to socket 0[core 4[hwt 0-1]]: [../../../../BB/../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 15 bound to socket 1[core 23[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../BB/../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 14 bound to socket 0[core 7[hwt 0-1]]: [../../../../../../../BB/../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 13 bound to socket 1[core 22[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../BB/../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 12 bound to socket 0[core 6[hwt 0-1]]: [../../../../../../BB/../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 19 bound to socket 1[core 25[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../BB/../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 18 bound to socket 0[core 9[hwt 0-1]]: [../../../../../../../../../BB/../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 17 bound to socket 1[core 24[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../BB/../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 16 bound to socket 0[core 8[hwt 0-1]]: [../../../../../../../../BB/../../../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 23 bound to socket 1[core 27[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../BB/../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 21 bound to socket 1[core 26[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../BB/../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 22 bound to socket 0[core 11[hwt 0-1]]: [../../../../../../../../../../../BB/../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 20 bound to socket 0[core 10[hwt 0-1]]: [../../../../../../../../../../BB/../../../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 27 bound to socket 1[core 29[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../BB/../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 25 bound to socket 1[core 28[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../BB/../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 26 bound to socket 0[core 13[hwt 0-1]]: [../../../../../../../../../../../../../BB/../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 24 bound to socket 0[core 12[hwt 0-1]]: [../../../../../../../../../../../../BB/../../..][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 31 bound to socket 1[core 31[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../BB]
+[b103.pri.cosma7.alces.network:19963] MCW rank 29 bound to socket 1[core 30[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../BB/..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 30 bound to socket 0[core 15[hwt 0-1]]: [../../../../../../../../../../../../../../../BB][../../../../../../../../../../../../../../../..]
+[b103.pri.cosma7.alces.network:19963] MCW rank 28 bound to socket 0[core 14[hwt 0-1]]: [../../../../../../../../../../../../../../BB/..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 96 bound to socket 0[core 0[hwt 0-1]]: [BB/../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 97 bound to socket 1[core 16[hwt 0-1]]: [../../../../../../../../../../../../../../../..][BB/../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 98 bound to socket 0[core 1[hwt 0-1]]: [../BB/../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 99 bound to socket 1[core 17[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../BB/../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 100 bound to socket 0[core 2[hwt 0-1]]: [../../BB/../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 101 bound to socket 1[core 18[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../BB/../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 102 bound to socket 0[core 3[hwt 0-1]]: [../../../BB/../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 103 bound to socket 1[core 19[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../BB/../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 105 bound to socket 1[core 20[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../BB/../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 106 bound to socket 0[core 5[hwt 0-1]]: [../../../../../BB/../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 107 bound to socket 1[core 21[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../BB/../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 109 bound to socket 1[core 22[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../BB/../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 110 bound to socket 0[core 7[hwt 0-1]]: [../../../../../../../BB/../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 111 bound to socket 1[core 23[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../BB/../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 115 bound to socket 1[core 25[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../BB/../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 113 bound to socket 1[core 24[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../BB/../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 114 bound to socket 0[core 9[hwt 0-1]]: [../../../../../../../../../BB/../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 119 bound to socket 1[core 27[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../BB/../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 104 bound to socket 0[core 4[hwt 0-1]]: [../../../../BB/../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 117 bound to socket 1[core 26[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../BB/../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 118 bound to socket 0[core 11[hwt 0-1]]: [../../../../../../../../../../../BB/../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 123 bound to socket 1[core 29[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../BB/../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 108 bound to socket 0[core 6[hwt 0-1]]: [../../../../../../BB/../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 121 bound to socket 1[core 28[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../BB/../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 32 bound to socket 0[core 0[hwt 0-1]]: [BB/../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 33 bound to socket 1[core 16[hwt 0-1]]: [../../../../../../../../../../../../../../../..][BB/../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 34 bound to socket 0[core 1[hwt 0-1]]: [../BB/../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 35 bound to socket 1[core 17[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../BB/../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 36 bound to socket 0[core 2[hwt 0-1]]: [../../BB/../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 37 bound to socket 1[core 18[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../BB/../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 38 bound to socket 0[core 3[hwt 0-1]]: [../../../BB/../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 39 bound to socket 1[core 19[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../BB/../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 40 bound to socket 0[core 4[hwt 0-1]]: [../../../../BB/../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 43 bound to socket 1[core 21[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../BB/../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 44 bound to socket 0[core 6[hwt 0-1]]: [../../../../../../BB/../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 47 bound to socket 1[core 23[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../BB/../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 48 bound to socket 0[core 8[hwt 0-1]]: [../../../../../../../../BB/../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 51 bound to socket 1[core 25[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../BB/../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 52 bound to socket 0[core 10[hwt 0-1]]: [../../../../../../../../../../BB/../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 122 bound to socket 0[core 13[hwt 0-1]]: [../../../../../../../../../../../../../BB/../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 55 bound to socket 1[core 27[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../BB/../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 56 bound to socket 0[core 12[hwt 0-1]]: [../../../../../../../../../../../../BB/../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 59 bound to socket 1[core 29[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../BB/../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 112 bound to socket 0[core 8[hwt 0-1]]: [../../../../../../../../BB/../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 41 bound to socket 1[core 20[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../BB/../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 60 bound to socket 0[core 14[hwt 0-1]]: [../../../../../../../../../../../../../../BB/..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 63 bound to socket 1[core 31[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../BB]
+[b105.pri.cosma7.alces.network:17205] MCW rank 64 bound to socket 0[core 0[hwt 0-1]]: [BB/../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 125 bound to socket 1[core 30[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../BB/..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 65 bound to socket 1[core 16[hwt 0-1]]: [../../../../../../../../../../../../../../../..][BB/../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 66 bound to socket 0[core 1[hwt 0-1]]: [../BB/../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 67 bound to socket 1[core 17[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../BB/../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 127 bound to socket 1[core 31[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../BB]
+[b105.pri.cosma7.alces.network:17205] MCW rank 68 bound to socket 0[core 2[hwt 0-1]]: [../../BB/../../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 69 bound to socket 1[core 18[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../BB/../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 42 bound to socket 0[core 5[hwt 0-1]]: [../../../../../BB/../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 45 bound to socket 1[core 22[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../BB/../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 70 bound to socket 0[core 3[hwt 0-1]]: [../../../BB/../../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 71 bound to socket 1[core 19[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../BB/../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 72 bound to socket 0[core 4[hwt 0-1]]: [../../../../BB/../../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 73 bound to socket 1[core 20[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../BB/../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 116 bound to socket 0[core 10[hwt 0-1]]: [../../../../../../../../../../BB/../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 74 bound to socket 0[core 5[hwt 0-1]]: [../../../../../BB/../../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 76 bound to socket 0[core 6[hwt 0-1]]: [../../../../../../BB/../../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 77 bound to socket 1[core 22[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../BB/../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 78 bound to socket 0[core 7[hwt 0-1]]: [../../../../../../../BB/../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 80 bound to socket 0[core 8[hwt 0-1]]: [../../../../../../../../BB/../../../../../../..][../../../../../../../../../../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 126 bound to socket 0[core 15[hwt 0-1]]: [../../../../../../../../../../../../../../../BB][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 81 bound to socket 1[core 24[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../BB/../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 82 bound to socket 0[core 9[hwt 0-1]]: [../../../../../../../../../BB/../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 84 bound to socket 0[core 10[hwt 0-1]]: [../../../../../../../../../../BB/../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 85 bound to socket 1[core 26[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../BB/../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 86 bound to socket 0[core 11[hwt 0-1]]: [../../../../../../../../../../../BB/../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 88 bound to socket 0[core 12[hwt 0-1]]: [../../../../../../../../../../../../BB/../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 89 bound to socket 1[core 28[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../BB/../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 90 bound to socket 0[core 13[hwt 0-1]]: [../../../../../../../../../../../../../BB/../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 92 bound to socket 0[core 14[hwt 0-1]]: [../../../../../../../../../../../../../../BB/..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 75 bound to socket 1[core 21[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../BB/../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 93 bound to socket 1[core 30[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../BB/..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 46 bound to socket 0[core 7[hwt 0-1]]: [../../../../../../../BB/../../../../../../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 94 bound to socket 0[core 15[hwt 0-1]]: [../../../../../../../../../../../../../../../BB][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 79 bound to socket 1[core 23[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../BB/../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 49 bound to socket 1[core 24[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../BB/../../../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 120 bound to socket 0[core 12[hwt 0-1]]: [../../../../../../../../../../../../BB/../../..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 83 bound to socket 1[core 25[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../BB/../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 50 bound to socket 0[core 9[hwt 0-1]]: [../../../../../../../../../BB/../../../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 53 bound to socket 1[core 26[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../BB/../../../../..]
+[b106.pri.cosma7.alces.network:16999] MCW rank 124 bound to socket 0[core 14[hwt 0-1]]: [../../../../../../../../../../../../../../BB/..][../../../../../../../../../../../../../../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 87 bound to socket 1[core 27[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../BB/../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 54 bound to socket 0[core 11[hwt 0-1]]: [../../../../../../../../../../../BB/../../../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 57 bound to socket 1[core 28[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../BB/../../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 91 bound to socket 1[core 29[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../BB/../..]
+[b105.pri.cosma7.alces.network:17205] MCW rank 95 bound to socket 1[core 31[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../../BB]
+[b104.pri.cosma7.alces.network:18185] MCW rank 58 bound to socket 0[core 13[hwt 0-1]]: [../../../../../../../../../../../../../BB/../..][../../../../../../../../../../../../../../../..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 61 bound to socket 1[core 30[hwt 0-1]]: [../../../../../../../../../../../../../../../..][../../../../../../../../../../../../../../BB/..]
+[b104.pri.cosma7.alces.network:18185] MCW rank 62 bound to socket 0[core 15[hwt 0-1]]: [../../../../../../../../../../../../../../../BB][../../../../../../../../../../../../../../../..]
+level 0 thread 0x2af986b07700 affinity 5,37
+level 0 thread 0x2b7f9cf88700 affinity 13,45
+level 0 thread 0x2ab75f9f4700 affinity 28,60
+level 0 thread 0x2ae7b39f6700 affinity 13,45
+level 0 thread 0x2b9feadb4700 affinity 22,54
+level 0 thread 0x2af4407e1700 affinity 12,44
+level 0 thread 0x2ac229a58700 affinity 26,58
+level 0 thread 0x2b7a01e43700 affinity 23,55
+level 0 thread 0x2b98e6ff9700 affinity 2,34
+level 0 thread 0x2add18e03700 affinity 2,34
+level 0 thread 0x2b4ba7d1a700 affinity 4,36
+level 0 thread 0x2ba564946700 affinity 15,47
+level 0 thread 0x2b24479c0700 affinity 3,35
+level 0 thread 0x2b2bc46eb700 affinity 12,44
+level 0 thread 0x2aaca9dd4700 affinity 16,48
+level 0 thread 0x2b47c06a2700 affinity 11,43
+level 0 thread 0x2ba361774700 affinity 7,39
+level 0 thread 0x2acc6a708700 affinity 6,38
+level 0 thread 0x2b0999e93700 affinity 9,41
+level 0 thread 0x2b7c277ea700 affinity 19,51
+level 0 thread 0x2ac868fee700 affinity 14,46
+level 0 thread 0x2afe62f0e700 affinity 0,32
+level 0 thread 0x2b629d266700 affinity 4,36
+level 0 thread 0x2b6bde6b5700 affinity 11,43
+level 0 thread 0x2b8251d5d700 affinity 27,59
+level 0 thread 0x2aca67849700 affinity 24,56
+level 0 thread 0x2aed8eceb700 affinity 14,46
+level 0 thread 0x2b9374c10700 affinity 21,53
+level 0 thread 0x2b2a100e0700 affinity 20,52
+level 0 thread 0x2b3ffe3b7700 affinity 9,41
+level 0 thread 0x2b4531c8f700 affinity 15,47
+level 0 thread 0x2ba85bb3b700 affinity 25,57
+level 0 thread 0x2b69ae187700 affinity 4,36
+level 0 thread 0x2afc010ff700 affinity 15,47
+level 0 thread 0x2b163e2f6700 affinity 5,37
+level 0 thread 0x2b666930c700 affinity 5,37
+level 0 thread 0x2b317a8a7700 affinity 31,63
+level 0 thread 0x2ab792122700 affinity 16,48
+level 0 thread 0x2b03f219d700 affinity 3,35
+level 0 thread 0x2b3bdeeb5700 affinity 17,49
+level 0 thread 0x2af28083f700 affinity 2,34
+level 0 thread 0x2b68f6039700 affinity 11,43
+level 0 thread 0x2ad15f4f7700 affinity 14,46
+level 0 thread 0x2b48f0a1d700 affinity 25,57
+level 0 thread 0x2ba59eb4b700 affinity 23,55
+level 0 thread 0x2ad3bba76700 affinity 10,42
+level 0 thread 0x2b4a07b64700 affinity 15,47
+level 0 thread 0x2ab32d82a700 affinity 4,36
+level 0 thread 0x2b0bead7c700 affinity 29,61
+level 0 thread 0x2af0bff25700 affinity 28,60
+level 0 thread 0x2b93b6e8d700 affinity 30,62
+level 0 thread 0x2b1bf2780700 affinity 24,56
+level 0 thread 0x2b678f059700 affinity 31,63
+level 0 thread 0x2b5c10665700 affinity 6,38
+level 0 thread 0x2afeed725700 affinity 30,62
+level 0 thread 0x2ad993fba700 affinity 27,59
+level 0 thread 0x2b74efe55700 affinity 7,39
+level 0 thread 0x2b6223e85700 affinity 17,49
+level 0 thread 0x2aeed5e94700 affinity 3,35
+level 0 thread 0x2b678ad24700 affinity 24,56
+level 0 thread 0x2b5493511700 affinity 18,50
+level 0 thread 0x2b38bf315700 affinity 6,38
+level 0 thread 0x2ab53418a700 affinity 8,40
+level 0 thread 0x2ae085412700 affinity 8,40
+level 0 thread 0x2b7ef63e7700 affinity 3,35
+level 0 thread 0x2b9489a3f700 affinity 30,62
+level 0 thread 0x2aad5954f700 affinity 9,41
+level 0 thread 0x2b2cf8a73700 affinity 9,41
+level 0 thread 0x2b6c93a39700 affinity 22,54
+level 0 thread 0x2b4eb9280700 affinity 0,32
+level 0 thread 0x2b8694a80700 affinity 10,42
+level 0 thread 0x2ba314da4700 affinity 0,32
+level 0 thread 0x2aedbb4fe700 affinity 23,55
+level 0 thread 0x2b6bd252e700 affinity 1,33
+level 0 thread 0x2b206b7b6700 affinity 1,33
+level 0 thread 0x2af264816700 affinity 25,57
+level 0 thread 0x2b7888c6a700 affinity 17,49
+level 0 thread 0x2b46574ab700 affinity 8,40
+level 0 thread 0x2acdd01f1700 affinity 29,61
+level 0 thread 0x2ba4fe9a7700 affinity 21,53
+level 0 thread 0x2aac20b75700 affinity 20,52
+level 0 thread 0x2ba032042700 affinity 8,40
+level 0 thread 0x2b2a08265700 affinity 22,54
+level 0 thread 0x2b615fce9700 affinity 29,61
+level 0 thread 0x2ac4c7fb9700 affinity 28,60
+level 0 thread 0x2b95a05b1700 affinity 23,55
+level 0 thread 0x2ab131fab700 affinity 21,53
+level 0 thread 0x2ae464b1a700 affinity 17,49
+level 0 thread 0x2b181e35e700 affinity 30,62
+level 0 thread 0x2aad3f49e700 affinity 1,33
+level 0 thread 0x2b257f3a5700 affinity 19,51
+level 0 thread 0x2b7d0e1ef700 affinity 18,50
+level 0 thread 0x2afdf0ce6700 affinity 28,60
+level 0 thread 0x2b83e59a0700 affinity 18,50
+level 0 thread 0x2af2db868700 affinity 10,42
+level 0 thread 0x2b947acd1700 affinity 24,56
+level 0 thread 0x2b94b9981700 affinity 25,57
+level 0 thread 0x2b9793c74700 affinity 27,59
+level 0 thread 0x2b3fef4c0700 affinity 31,63
+level 0 thread 0x2b19092e3700 affinity 19,51
+level 0 thread 0x2ba563f5a700 affinity 29,61
+level 0 thread 0x2b7a53a14700 affinity 7,39
+level 0 thread 0x2b02ecc57700 affinity 7,39
+level 0 thread 0x2b1ca662b700 affinity 5,37
+level 0 thread 0x2b1576ac4700 affinity 6,38
+level 0 thread 0x2b7fb13e5700 affinity 10,42
+level 0 thread 0x2b03fea7b700 affinity 18,50
+level 0 thread 0x2b8a383e9700 affinity 14,46
+level 0 thread 0x2b3ea9c5b700 affinity 11,43
+level 0 thread 0x2afb37d89700 affinity 26,58
+level 0 thread 0x2b3b240ec700 affinity 12,44
+level 0 thread 0x2b3c82976700 affinity 20,52
+level 0 thread 0x2b6d524a0700 affinity 19,51
+level 0 thread 0x2ae16a085700 affinity 13,45
+level 0 thread 0x2ba7d11c8700 affinity 26,58
+level 0 thread 0x2abecca3f700 affinity 13,45
+level 0 thread 0x2b5e5e55f700 affinity 1,33
+level 0 thread 0x2afbe404a700 affinity 27,59
+level 0 thread 0x2b0a622ef700 affinity 20,52
+level 0 thread 0x2b5566548700 affinity 2,34
+level 0 thread 0x2b3b68822700 affinity 21,53
+level 0 thread 0x2b4dfae73700 affinity 22,54
+level 0 thread 0x2ac3460ca700 affinity 16,48
+level 0 thread 0x2b4859bf8700 affinity 26,58
+level 0 thread 0x2b8ca1be8700 affinity 16,48
+level 0 thread 0x2b91c543f700 affinity 31,63
+level 0 thread 0x2b2de815f700 affinity 12,44
+level 0 thread 0x2b23f32c7700 affinity 0,32

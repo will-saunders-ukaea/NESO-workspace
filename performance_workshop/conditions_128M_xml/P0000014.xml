@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NEKTAR>
+    <GEOMETRY DIM="2" SPACE="2" PARTITION="14">
+        <VERTEX>
+            <V ID="996">9.37500000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="997">9.37500000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="998">9.37500000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="1029">9.68750000e-01 1.87500000e-01 0.00000000e+00</V>
+            <V ID="1030">9.68750000e-01 2.18750000e-01 0.00000000e+00</V>
+            <V ID="1031">9.68750000e-01 2.50000000e-01 0.00000000e+00</V>
+            <V ID="1062">1.00000000e+00 1.87500000e-01 0.00000000e+00</V>
+            <V ID="1063">1.00000000e+00 2.18750000e-01 0.00000000e+00</V>
+            <V ID="1064">1.00000000e+00 2.50000000e-01 0.00000000e+00</V>
+        </VERTEX>
+        <EDGE>
+            <E ID="1930">996 997</E>
+            <E ID="1932">997 998</E>
+            <E ID="1994">1029 996</E>
+            <E ID="1995">1029 1030</E>
+            <E ID="1996">1030 997</E>
+            <E ID="1997">1030 1031</E>
+            <E ID="1998">1031 998</E>
+            <E ID="2059">1062 1029</E>
+            <E ID="2060">1062 1063</E>
+            <E ID="2061">1063 1030</E>
+            <E ID="2062">1063 1064</E>
+            <E ID="2063">1064 1031</E>
+        </EDGE>
+        <ELEMENT>
+            <Q ID="966">1994 1995 1996 1930</Q>
+            <Q ID="967">1996 1997 1998 1932</Q>
+            <Q ID="998">2059 2060 2061 1995</Q>
+            <Q ID="999">2061 2062 2063 1997</Q>
+        </ELEMENT>
+        <CURVED />
+        <COMPOSITE>
+            <C ID="1"> Q[966-967,998-999] </C>
+            <C ID="200"> E[2060,2062] </C>
+        </COMPOSITE>
+        <DOMAIN>
+            <D ID="0"> C[1] </D>
+        </DOMAIN>
+    </GEOMETRY>
+    <CONDITIONS>
+        <SOLVERINFO>
+            <I PROPERTY="EQTYPE" VALUE="PoissonPIC" />
+            <I PROPERTY="Projection" VALUE="Continuous" />
+        </SOLVERINFO>
+        <GLOBALSYSSOLNINFO>
+            <V VAR="u">
+                <I PROPERTY="GlobalSysSoln" VALUE="IterativeStaticCond" />
+                <I PROPERTY="IterativeSolverTolerance" VALUE="1e-8" />
+            </V>
+        </GLOBALSYSSOLNINFO>
+        <PARAMETERS>
+            <P>Lambda = 0.0</P>
+            <P>epsilon = -1.0</P>
+            <P>num_particles_total = 128000000</P>
+            <P>num_particles_per_cell = -1</P>
+            <P>particle_time_step = 0.001</P>
+            <P>particle_num_time_steps = 400</P>
+            <P>particle_num_write_particle_steps = 0</P>
+            <P>particle_num_write_field_energy_steps = 0</P>
+            <P>particle_num_write_field_steps = 0</P>
+            <P>particle_num_print_steps = 10</P>
+            <P>particle_distribution_position = 2</P>
+            <P>particle_initial_velocity = 1.0</P>
+            <P>particle_charge_density = 105.27578027828649</P>
+            <P>particle_number_density = 105.27578027828649</P>
+        </PARAMETERS>
+        <VARIABLES>
+            <V ID="0">u</V>
+            <V ID="1">rho</V>
+        </VARIABLES>
+        <BOUNDARYREGIONS>
+            <B ID="2">C[200]</B>
+        </BOUNDARYREGIONS>
+        <BOUNDARYCONDITIONS>
+            <REGION REF="2">
+                <P VAR="u" VALUE="[4]" />
+                <P VAR="rho" VALUE="[4]" />
+            </REGION>
+        </BOUNDARYCONDITIONS>
+    </CONDITIONS>
+    <COLLECTIONS>
+        <OPERATOR TYPE="BwdTrans">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+        <OPERATOR TYPE="Helmholtz">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="NoCollection" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="SumFac" />
+        </OPERATOR>
+        <OPERATOR TYPE="IProductWRTDerivBase">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="StdMat" />
+        </OPERATOR>
+        <OPERATOR TYPE="PhysDeriv">
+            <ELEMENT TYPE="Q" ORDER="*" IMPTYPE="MatrixFree" />
+        </OPERATOR>
+    </COLLECTIONS>
+    <EXPANSIONS>
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="u" />
+        <E COMPOSITE="C[1]" NUMMODES="4" TYPE="MODIFIED" FIELDS="rho" />
+    </EXPANSIONS>
+    <Metadata>
+        <Provenance>
+            <Hostname>L0211-XU</Hostname>
+            <NektarVersion>5.3.0</NektarVersion>
+            <Timestamp>04-May-2023 15:35:15</Timestamp>
+        </Provenance>
+        <NekMeshCommandLine>-v -m peralign:surf1=100:surf2=300:dir=y -m peralign:surf1=200:surf2=400:dir=x periodic_structured_cartesian_square.msh periodic_structured_cartesian_square.tmp.xml:xml:uncompress</NekMeshCommandLine>
+    </Metadata>
+</NEKTAR>
