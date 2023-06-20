@@ -12,7 +12,7 @@ class LinearQuad(LinearBase):
         num_vertices = 4
         ndim = 2
         name = "linear_2d"
-        namespace = "Quad"
+        namespace = "Quadrilateral"
         x_description = """
 X(xi) = 0.25 * v0 * (1 - xi_0) * (1 - xi_1) + 
         0.25 * v1 * (1 + xi_0) * (1 - xi_1) + 

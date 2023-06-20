@@ -33,7 +33,7 @@ geom_types = (
     pyramid.get_geom_type(),
     tetrahedron.get_geom_type(),
     hexahedron.get_geom_type(),
-    quad.get_geom_type(),
+    quadrilateral.get_geom_type(),
 )
 # Create an instance of each type
 geom_objects = [gx() for gx in geom_types]
