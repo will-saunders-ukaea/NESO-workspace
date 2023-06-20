@@ -1,4 +1,6 @@
-# import all the modules for each geometry type and run the self test
+"""
+Import all the modules for each geometry type and run the self tests.
+"""
 
 import importlib
 

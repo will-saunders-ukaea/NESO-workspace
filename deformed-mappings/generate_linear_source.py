@@ -1,3 +1,9 @@
+"""
+This is a wrapper script that generates the implementations to compute Newton
+steps and residuals for 3D linear Nektar++ geometry objects (and 2D
+linear quadrilaterals).
+"""
+
 import sys
 import os
 import prism
@@ -21,7 +27,7 @@ where <output_dir> is the output directory where generated code will be placed.
     )
     quit()
 
-
+# The geometry types to generate code for.
 geom_types = (
     prism.get_geom_type(),
     pyramid.get_geom_type(),
@@ -29,10 +35,14 @@ geom_types = (
     hexahedron.get_geom_type(),
     quad.get_geom_type(),
 )
+# Create an instance of each type
 geom_objects = [gx() for gx in geom_types]
+# Create a Newton instance for each type.
 geom_newton = [Newton(gx) for gx in geom_objects]
+# Create the C code for each type.
 geom_ccode = [NewtonLinearCCode(gx) for gx in geom_newton]
 
+# Place the generated code for each geometry type in its own header file.
 output = {}
 for gx in geom_ccode:
     filename = "{}.hpp".format(gx.newton.geom.namespace.lower())
@@ -75,7 +85,8 @@ for filename in output.keys():
     with open(p, "w") as fh:
         fh.write(output[filename])
 
-
+# Create an overarching header file that includes all the generated header
+# files for the individual geometry objects.
 includes = "\n".join([f'#include "{s}"' for s in output.keys()])
 
 with open(os.path.join(output_dir, "linear_newton_implementation.hpp"), "w") as fh:
