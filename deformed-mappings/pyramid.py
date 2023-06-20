@@ -63,7 +63,12 @@ def self_test():
     for vx in vertices_ref[:-1]:
         to_test = geom_ref.x(vx)
         correct = vx
-        assert np.linalg.norm(np.array(correct).ravel() - np.array(to_test).ravel(), np.inf) < 1.0e-15
+        assert (
+            np.linalg.norm(
+                np.array(correct).ravel() - np.array(to_test).ravel(), np.inf
+            )
+            < 1.0e-15
+        )
         to_test = geom_ref.f(vx, vx)
         assert np.linalg.norm(np.array(to_test).ravel(), np.inf) < 1.0e-15
 
@@ -114,7 +119,12 @@ def self_test():
     for vi, vx in enumerate(vertices_ref[:-1]):
         to_test = geom_test.x(vx)
         correct = vertices_test[vi]
-        assert np.linalg.norm(np.array(correct).ravel() - np.array(to_test).ravel(), np.inf) < 1.0e-15
+        assert (
+            np.linalg.norm(
+                np.array(correct).ravel() - np.array(to_test).ravel(), np.inf
+            )
+            < 1.0e-15
+        )
         to_test = geom_test.f(vx, correct)
         assert np.linalg.norm(np.array(to_test).ravel(), np.inf) < 1.0e-15
 

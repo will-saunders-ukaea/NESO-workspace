@@ -51,8 +51,14 @@ class Newton(NewtonCommon):
 
         self.J_symbolic = Matrix(Jsymbols)
         self.Jinv_symbolic = self.J_symbolic.inv()
-        self.step = solve(self.xi_next - self.xi + (self.Jinv_symbolic) * self.fv, self.xi_next, dict=True)
-        self.step_components = [self.step[0][self.xi_next[dimx]] for dimx in range(self.ndim)]
+        self.step = solve(
+            self.xi_next - self.xi + (self.Jinv_symbolic) * self.fv,
+            self.xi_next,
+            dict=True,
+        )
+        self.step_components = [
+            self.step[0][self.xi_next[dimx]] for dimx in range(self.ndim)
+        ]
         self.f = self._f
         self.x = self._x
 
@@ -92,7 +98,9 @@ class NewtonEvaluate:
             for colx in range(ndim):
                 subs[self.newton.J_symbolic[rowx, colx]] = Jeval[rowx, colx]
 
-        xin = [self.newton.step_components[dimx].evalf(subs=subs) for dimx in range(ndim)]
+        xin = [
+            self.newton.step_components[dimx].evalf(subs=subs) for dimx in range(ndim)
+        ]
         xinfloat = [float(ex) for ex in xin]
         return xinfloat
 
@@ -113,23 +121,31 @@ class NewtonLinearCCode:
         for dimx in range(ndim):
             n = f"xi{dimx}"
             args.append(f"const REAL {n}")
-            docs_params.append(f"@param[in] {n} Current xi_n point, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in] {n} Current xi_n point, {component_name[dimx]} component."
+            )
 
         for vi, vx in enumerate(self.newton.geom.vertices):
             for dimx in range(ndim):
                 n = f"v{vi}{dimx}"
                 args.append(f"const REAL {n}")
-                docs_params.append(f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component.")
+                docs_params.append(
+                    f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component."
+                )
 
         for dimx in range(ndim):
             n = f"phys{dimx}"
             args.append(f"const REAL {n}")
-            docs_params.append(f"@param[in] {n} Target point in global space, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in] {n} Target point in global space, {component_name[dimx]} component."
+            )
 
         for dimx in range(ndim):
             n = f"f{dimx}"
             args.append(f"REAL * {n}")
-            docs_params.append(f"@param[in, out] {n} Current f evaluation at xi, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in, out] {n} Current f evaluation at xi, {component_name[dimx]} component."
+            )
 
         params = "\n * ".join(docs_params)
         x_description = "\n * ".join(self.newton.geom.x_description.split("\n"))
@@ -186,23 +202,31 @@ class NewtonLinearCCode:
         for dimx in range(ndim):
             n = f"xi{dimx}"
             args.append(f"const REAL {n}")
-            docs_params.append(f"@param[in] {n} Current xi_n point, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in] {n} Current xi_n point, {component_name[dimx]} component."
+            )
 
         for vi, vx in enumerate(self.newton.geom.vertices):
             for dimx in range(ndim):
                 n = f"v{vi}{dimx}"
                 args.append(f"const REAL {n}")
-                docs_params.append(f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component.")
+                docs_params.append(
+                    f"@param[in] {n} Vertex {vi}, {component_name[dimx]} component."
+                )
 
         for dimx in range(ndim):
             n = f"phys{dimx}"
             args.append(f"const REAL {n}")
-            docs_params.append(f"@param[in] {n} Target point in global space, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in] {n} Target point in global space, {component_name[dimx]} component."
+            )
 
         for dimx in range(ndim):
             n = f"f{dimx}"
             args.append(f"const REAL {n}")
-            docs_params.append(f"@param[in] {n} Current f evaluation at xi, {component_name[dimx]} component.")
+            docs_params.append(
+                f"@param[in] {n} Current f evaluation at xi, {component_name[dimx]} component."
+            )
 
         for dimx in range(ndim):
             n = f"xin{dimx}"
@@ -270,7 +294,9 @@ class NewtonLinearCCode:
                 counter += 1
                 instr.append(expr)
 
-        cse_list = cse(self.newton.step_components, numbered_symbols("y"), optimizations="basic")
+        cse_list = cse(
+            self.newton.step_components, numbered_symbols("y"), optimizations="basic"
+        )
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
             rhs = self.to_c(cse_expr[1])
@@ -314,7 +340,8 @@ class LinearBase:
         self.num_vertices = num_vertices
         self.ndim = ndim
         self.vertices = [
-            make_vector(*["v{}{}".format(vx, dx) for dx in range(self.ndim)]) for vx in range(self.num_vertices)
+            make_vector(*["v{}{}".format(vx, dx) for dx in range(self.ndim)])
+            for vx in range(self.num_vertices)
         ]
         self.name = name
         self.namespace = namespace

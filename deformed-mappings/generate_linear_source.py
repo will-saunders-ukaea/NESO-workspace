@@ -4,7 +4,7 @@ import prism
 import pyramid
 import tetrahedron
 import hexahedron
-import quad
+import quadrilateral
 from newton_generation import *
 
 if len(sys.argv) < 2 or "-h" in sys.argv:
