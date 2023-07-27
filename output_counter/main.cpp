@@ -13,16 +13,46 @@ using namespace cl;
 struct OutputCounter {
 
   /*
-   * These members are simple types which are trivially copyable (unlike shared
-   * pointers).
+   * These members are scalar types which are trivially copyable (unlike shared
+   * pointers). This does force the class to hold a pointer to the device which
+   * in turn requires care to ensure use-after-free does not occur.
    */
   sycl::queue * queue;
   std::size_t N;
-  // Following CUDA conventions this is prefixed with a d_ to denote device
-  // memory.
+  /*
+   * Following CUDA conventions this is prefixed with a d_ to denote device
+   */
   std::size_t * d_ptr;
   
-  // This is a host callable function and not device callable
+  /**
+   *  Constructor, host callable only.
+   */
+  OutputCounter(
+    sycl::queue &queue,
+    const size_t N
+  ) : queue(&queue), N(N) {
+    this->d_ptr = static_cast<size_t *>(
+        sycl::malloc_device(N * sizeof(size_t), *this->queue));
+  };
+  
+  /**
+   *  This is a user called function (host) as if it were in the destructor:
+   *  1) The user provided destructor makes the class non-trivially copyable.
+   *  2) More logic would be needed to avoid double frees on the pointer when
+   *     the obejct is copied.
+   */
+  inline void free(){
+    if (this->d_ptr != nullptr){
+      sycl::free(this->d_ptr, *this->queue);
+      this->d_ptr = nullptr;
+    }
+  };
+  
+  /* 
+   * This is a host callable function and not device callable. This zeros the
+   * counts in the underlying buffer - which is a common buffer across all
+   * copies of the object.
+   */
   inline void pre_kernel(){
     // could just do a memcpy here
     auto k_ptr = this->d_ptr;
@@ -35,7 +65,9 @@ struct OutputCounter {
         .wait_and_throw();
   }
 
-  // host callable and not device callable
+  /* 
+   * Host callable and not device callable. Gets the counter values.
+   */
   inline std::vector<size_t> get_counts() const {
     
     std::vector<size_t> host_counts(this->N);
@@ -52,8 +84,11 @@ struct OutputCounter {
     return host_counts;
   }
 
-  // This is a device callable function and not host callable.
-  // It returns a unique "position" of the caller for the index.
+  /*
+   * This is a device callable function and not host callable.
+   * It returns a unique "position" of the caller for the index and atomically
+   * increments the counter.
+   */
   inline size_t get_add_output(
     const int index
   ) const {
@@ -65,59 +100,41 @@ struct OutputCounter {
 
 };
 
-/**
- *  Slightly overcomplicated class to malloc and free the OutputContainers
- */
-struct OutputCounterFactory {
-  std::shared_ptr<sycl::queue> queue;
-  std::list<size_t*> alloced;
-  OutputCounterFactory(std::shared_ptr<sycl::queue> queue) : queue(queue) {};
-
-  // on destruction of this object free all the device memory which was allocated by the instance
-  ~OutputCounterFactory() {
-    for(size_t * ptr : this->alloced){
-      sycl::free(ptr, *this->queue);
-    }
-  };
-  
-  inline OutputCounter create(const size_t N){
-    OutputCounter oc;
-    oc.queue = this->queue.get();
-    oc.N = N;
-    size_t * ptr = static_cast<size_t *>(sycl::malloc_device(N * sizeof(size_t), *this->queue));
-    oc.d_ptr = ptr;
-    this->alloced.push_back(ptr);
-    return oc;
-  }
-};
-
 
 int main(int argc, char** argv){
 
   static_assert(std::is_trivially_copyable_v<OutputCounter> == true, 
       "OutputCounter is not trivially copyable to device");
 
-
   sycl::device device = sycl::device(sycl::default_selector());
-  auto queue = std::make_shared<sycl::queue>(device);
-  auto output_counter_factory = std::make_shared<OutputCounterFactory>(queue);
-  auto output_counter_4 = output_counter_factory->create(4);
+  std::cout << "Using " << device.get_info<sycl::info::device::name>()
+    << std::endl;
+  sycl::queue queue = sycl::queue(device);
+  OutputCounter output_counter_4(queue, 4);
 
   const std::size_t N = 1024;
   output_counter_4.pre_kernel();
 
-  queue->submit([&](sycl::handler &cgh) {
+  queue.submit([&](sycl::handler &cgh) {
           cgh.parallel_for<>(
               sycl::range<1>(N), [=](sycl::id<1> idx) {
-                output_counter_4.get_add_output(idx % 4);
+                
+                // Each thread increments the mod(idx, 4) counter.
+                // Index is the value of the counter before it was incremented.
+                const size_t index = output_counter_4.get_add_output(idx % 4);
+
               });
         })
         .wait_and_throw();
-
+  
+  // print the counts
   auto counts = output_counter_4.get_counts();
   for(auto cx : counts){
     std::cout << cx << std::endl;
   }
+  
+  // free the underlying buffer in the counter
+  output_counter_4.free();
 
   return 0;
 }
