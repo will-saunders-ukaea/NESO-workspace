@@ -4,8 +4,8 @@ import numpy as np
 
 # small values generate a more refined mesh
 lc = 0.5
-# set to False to disable prism generation at bottom face
-make_prisms = True
+# set to False to disable pyramid generation at bottom face
+make_pyr = True
 
 class EntityMap:
     def __init__(self, next_value=1):
@@ -91,8 +91,6 @@ for z in range(nlevels-1):
     gmsh.model.add_physical_group(2, [sm[f"{z}E"],], surface_index[f"{z}E"])
     gmsh.model.add_physical_group(2, [sm[f"{z}W"],], surface_index[f"{z}W"])
 
-assert(surface_index.next < 500)
-
 # bottom
 gmsh.model.add_physical_group(2, (sm[f"0P"],), surface_index["0P"])
 # top
@@ -100,19 +98,19 @@ gmsh.model.add_physical_group(2, (sm[f"{nlevels-1}P"],), surface_index[f"{nlevel
 
 gmsh.model.geo.synchronize()
 
-if make_prisms:
+if make_pyr:
     horizontal_planes_to_be_quads = [0,]
     for z in horizontal_planes_to_be_quads:
+        # make quads
         gmsh.model.mesh.setRecombine(2, sm[f"{z}P"])
+        # make structured
         gmsh.model.mesh.set_transfinite_surface(sm[f"{z}P"])
 
 # We finally generate the mesh
 gmsh.model.mesh.generate(3)
 
 # save the mesh
-gmsh.write(f"arg.msh")
-# Launch the GUI to see the results:
-if "--visualise" in sys.argv:
-    gmsh.fltk.run()
+gmsh.write(f"tet_pyr.msh")
+
 
 gmsh.finalize()

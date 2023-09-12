@@ -96,6 +96,7 @@ class eModified_A:
         self.P = P
         self.z = z
         self.jacobi = jacobi
+        self._g = self._generate()
 
     def generate_variable(self, p):
         return symbols(f"modA_{p}_{self.z}")
@@ -106,7 +107,7 @@ class eModified_A:
         v = self.generate_variable(p)
         return v
 
-    def generate(self):
+    def _generate(self):
         g = []
         b0 = 0.5 * (1.0 - self.z)
         b1 = 0.5 * (1.0 + self.z)
@@ -120,39 +121,39 @@ class eModified_A:
                 g.append((s, b0 * b1 * self.jacobi(p - 2, 1, 1)))
         return g
 
+    def generate(self):
+        return self._g
+
+
+def generate_block(components):
+    g = []
+    for cx in components:
+        g += cx.generate()
+
+    output_steps = [lx[0] for lx in g]
+    steps = [lx[1] for lx in g]
+    instr = []
+    expand_pow = create_expand_pow_optimization(99)
+    cse_list = cse(steps, optimizations="basic")
+    for cse_expr in cse_list[0]:
+        lhs = cse_expr[0]
+        e = sympy.printing.c.ccode(expand_pow(cse_expr[1]), assign_to=lhs, standard="C99")
+        expr = f"const REAL {e}"
+        instr.append(expr)
+    for lhs_v, rhs_v in zip(output_steps, cse_list[1]):
+        e = sympy.printing.c.ccode(expand_pow(rhs_v), assign_to=lhs_v, standard="C99")
+        expr = f"const REAL {e}"
+        instr.append(expr)
+    
+    return instr
+
 
 if __name__ == "__main__":
 
     eta0 = symbols("eta0")
     jacobi0 = GenJacobi(eta0)
-    a = eModified_A(8, eta0, jacobi0)
-
-    gen_mod0 = a.generate()
-    gen_jacobi0 = jacobi0.generate()
-
-    lines = gen_jacobi0 + gen_mod0
-
-
-    s = ""
-    for lx in lines:
-        lhs = lx[0]
-        rhs = sympy.printing.c.ccode(lx[1], standard="C99")
-        s += f"const REAL {lhs} = {rhs};\n"
-
-    print(s)
-    
-    steps = [lx[1] for lx in lines]
-    instr = []
-    cse_list = cse(steps, optimizations="basic")
-    for cse_expr in cse_list[0]:
-        lhs = cse_expr[0]
-        e = sympy.printing.c.ccode(cse_expr[1], assign_to=lhs, standard="C99")
-        expr = f"const REAL {e}"
-        instr.append(expr)
-    for lhs_v, rhs_v in zip([lx[0] for lx in lines], cse_list[1]):
-        e = sympy.printing.c.ccode(rhs_v, assign_to=lhs_v, standard="C99")
-        expr = f"const REAL {e}"
-        instr.append(expr)   
+    dir0 = eModified_A(8, eta0, jacobi0)
+    instr = generate_block((jacobi0, dir0))
 
     print("\n".join(instr))
 
