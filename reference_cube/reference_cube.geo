@@ -17,4 +17,4 @@ Physical Volume (1) = {1};
 
 //Mesh.Algorithm = 6;
 //Mesh.Algorithm3D = 1;
-Mesh.SubdivisionAlgorithm = 2;
+//Mesh.SubdivisionAlgorithm = 2;
