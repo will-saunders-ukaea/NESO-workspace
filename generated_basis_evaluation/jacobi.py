@@ -1,7 +1,7 @@
 from sympy import *
 import sympy.printing.c
 from sympy.codegen.rewriting import create_expand_pow_optimization
-
+import functools
 
 class GenJacobi:
     def __init__(self, z, sym="P"):
@@ -147,7 +147,7 @@ class PowOptimiser:
     def _generate(self):
         g = [
             (self._base, self.z),
-            (self.generate_variable(0), sympy.core.numbers.RealNumber(1.0))
+            (self.generate_variable(0), RealNumber(1.0))
         ]
         for px in range(1, self.P + 1):
             g.append(
@@ -197,29 +197,136 @@ class eModified_B:
         return self._g
 
 
-def generate_block(components):
+def generate_statement(lhs, rhs, t):
+    
+
+    expand_pow = create_expand_pow_optimization(99)
+    expr = sympy.printing.c.ccode(expand_pow(rhs), standard="C99")
+    stmt = f"{t} {lhs}({expr});"
+    return stmt
+
+
+def generate_block(components, t="REAL"):
     g = []
     for cx in components:
         g.append(cx.generate())
- 
 
     instr = []
-    expand_pow = create_expand_pow_optimization(99)
+    symbols_generator = numbered_symbols()
+
+    ops = 0
+
     for gx in g:
         output_steps = [lx[0] for lx in gx]
         steps = [lx[1] for lx in gx]
-        cse_list = cse(steps, optimizations="basic")
+        cse_list = cse(steps, symbols=symbols_generator, optimizations="basic")
         for cse_expr in cse_list[0]:
             lhs = cse_expr[0]
-            e = sympy.printing.c.ccode(expand_pow(cse_expr[1]), assign_to=lhs, standard="C99")
-            expr = f"const REAL {e}"
-            instr.append(expr)
+            ops += cse_expr[1].count_ops()
+            e = generate_statement(lhs, cse_expr[1], t)
+            instr.append(e)
         for lhs_v, rhs_v in zip(output_steps, cse_list[1]):
-            e = sympy.printing.c.ccode(expand_pow(rhs_v), assign_to=lhs_v, standard="C99")
-            expr = f"const REAL {e}"
-            instr.append(expr)
+            e = generate_statement(lhs_v, rhs_v, t)
+            ops += rhs_v.count_ops()
+            instr.append(e)
     
-    return instr
+    return instr, ops
+
+
+class DofReader:
+    def __init__(self, sym, max_index):
+        self.sym = MatrixSymbol(sym, 1, max_index)
+        self.max_index = max_index
+        self._g = self._generate()
+
+    def generate_variable(self, ix):
+        return symbols(f"dof_{ix}")
+
+    def generate(self):
+        return self._g
+
+    def _generate(self):
+        g = []
+        for ix in range(self.max_index):
+            g.append((self.generate_variable(ix), self.sym[ix]))
+        return g
+
+
+class QuadrilateralEvaluate:
+    def __init__(self, P, dofs, dir0, dir1):
+        self.P = P
+        self.dofs = dofs
+        self.dir0 = dir0
+        self.dir1 = dir1
+        self.eta0 = dir0.z
+        self.eta1 = dir1.z
+        self._g = self._generate()
+
+    def generate(self):
+        return self._g
+
+    def generate_variable(self):
+        return symbols(f"eval_{self.eta0}_{self.eta1}")
+
+    def _generate(self):
+        ev = self.generate_variable()
+        g = [
+        ]
+        
+        mode = 0
+        tmps = []
+        for qx in range(self.P):
+            for px in range(self.P):
+                tmp_mode = symbols(f"eval_{self.eta0}_{self.eta1}_{mode}")
+                tmps.append(tmp_mode)
+                g.append(
+                    (tmp_mode, self.dofs.generate_variable(mode) * self.dir0.generate_variable(px) * self.dir1.generate_variable(qx))
+                )
+                mode += 1
+
+        g.append(
+            (ev, functools.reduce(lambda x,y: x+y, tmps))
+        )
+        return g
+
+
+def quadrilateral_evaluate_scalar(P, dofs, eta0, eta1):
+    jacobi0 = GenJacobi(eta0)
+    dir0 = eModified_A(P, eta0, jacobi0)
+    jacobi1 = GenJacobi(eta1)
+    dir1 = eModified_A(P, eta1, jacobi1)
+    dof_reader = DofReader(dofs, P * P)
+    loop = QuadrilateralEvaluate(P, dof_reader, dir0, dir1)
+    
+
+    blocks = [
+        jacobi0, dir0,
+        jacobi1, dir1,
+        dof_reader,
+        loop
+    ]
+
+    instr, ops = generate_block(blocks, "REAL")
+    instr_str = "\n".join(["  " + ix for ix in instr])
+
+    func = f"""
+template <>
+inline REAL quadrilateral_evaluate_scalar<{P}>(
+  const REAL eta0,
+  const REAL eta1,
+  const NekDouble * dofs
+){{
+{instr_str}
+  return {loop.generate_variable()};
+}}
+    """
+
+    print(func)
+    print(ops)
+
+    return func
+    
+
 
 
 if __name__ == "__main__":
@@ -227,13 +334,19 @@ if __name__ == "__main__":
     eta0 = symbols("eta0")
     jacobi0 = GenJacobi(eta0)
     dir0 = eModified_A(8, eta0, jacobi0)
-    instrA = generate_block((jacobi0, dir0))
+    instrA, opsA = generate_block((jacobi0, dir0))
     print("\n".join(instrA))
     
     print("-" * 60)
     eta1 = symbols("eta1")
     jacobi1 = GenJacobi(eta1)
     dir1 = eModified_B(8, eta1, jacobi1)
-    instrB = generate_block((jacobi1, dir1))
+    instrB, opsB = generate_block((jacobi1, dir1))
     print("\n".join(instrB))
 
+    print("-" * 60)
+    dofs = IndexedBase("dofs")
+
+    dofs = "dofs"
+    quad = quadrilateral_evaluate_scalar(4, dofs, eta0, eta1)
+    quad = quadrilateral_evaluate_scalar(8, dofs, eta0, eta1)
