@@ -325,7 +325,47 @@ inline REAL quadrilateral_evaluate_scalar<{P}>(
     print(ops)
 
     return func
+
+
+
+def quadrilateral_evaluate_vector(P, dofs, eta0, eta1):
+    jacobi0 = GenJacobi(eta0)
+    dir0 = eModified_A(P, eta0, jacobi0)
+    jacobi1 = GenJacobi(eta1)
+    dir1 = eModified_A(P, eta1, jacobi1)
+    dof_reader = DofReader(dofs, P * P)
+    loop = QuadrilateralEvaluate(P, dof_reader, dir0, dir1)
     
+
+    blocks = [
+        jacobi0, dir0,
+        jacobi1, dir1,
+        dof_reader,
+        loop
+    ]
+    
+    t = "sycl::vec<REAL, VECTOR_LENGTH>"
+    instr, ops = generate_block(blocks, t)
+    instr_str = "\n".join(["  " + ix for ix in instr])
+
+    func = f"""
+template <>
+inline {t} quadrilateral_evaluate_vector<{P}>(
+  const {t} eta0,
+  const {t} eta1,
+  const NekDouble * dofs
+){{
+{instr_str}
+  return {loop.generate_variable()};
+}}
+    """
+
+    print(func)
+    print(ops)
+
+    return func
+
+
 
 
 
@@ -348,5 +388,12 @@ if __name__ == "__main__":
     dofs = IndexedBase("dofs")
 
     dofs = "dofs"
-    quad = quadrilateral_evaluate_scalar(4, dofs, eta0, eta1)
-    quad = quadrilateral_evaluate_scalar(8, dofs, eta0, eta1)
+    #quad = quadrilateral_evaluate_scalar(4, dofs, eta0, eta1)
+    #quad = quadrilateral_evaluate_scalar(8, dofs, eta0, eta1)
+
+    quad = quadrilateral_evaluate_vector(4, dofs, eta0, eta1)
+    quad = quadrilateral_evaluate_vector(8, dofs, eta0, eta1)
+
+
+
+
