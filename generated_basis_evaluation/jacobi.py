@@ -101,12 +101,6 @@ class eModified_A:
     def generate_variable(self, p):
         return symbols(f"modA_{p}_{self.z}")
 
-    def __call__(self, p):
-        assert p >= 0
-        assert p < self.P
-        v = self.generate_variable(p)
-        return v
-
     def _generate(self):
         g = []
         b0 = 0.5 * (1.0 - self.z)
@@ -169,15 +163,6 @@ class eModified_B:
     def generate_variable(self, p, q):
         return symbols(f"modB_{p}_{q}_{self.z}")
 
-    def __call__(self, p, q):
-        assert p >= 0
-        assert p < self.P
-        assert q >= 0
-        assert q <= p
-
-        v = self.generate_variable(p)
-        return v
-
     def _generate(self):
         g = []
         b0 = 0.5 * (1.0 - self.z)
@@ -197,8 +182,85 @@ class eModified_B:
         return self._g
 
 
+class eModified_C:
+    def __init__(self, P: int, z, jacobi):
+        self.P = P
+        self.z = z
+        self._B = eModified_B(P, z, jacobi)
+        self._g = self._B.generate() + self._generate()
+
+    def generate_variable(self, p, q, r):
+        return symbols(f"modC_{p}_{q}_{r}_{self.z}")
+
+    def _generate(self):
+        g = []
+        for p in range(self.P):
+            for q in range(self.P - p):
+                for r in range(self.P - p - q):
+                    g.append(
+                        (
+                            self.generate_variable(p,q,r), 
+                            self._B.generate_variable(p+q, r)
+                        )
+                    )
+        return g
+
+    def generate(self):
+        return self._g
+
+
+class eModified_PyrC:
+    def __init__(self, P: int, z, jacobi):
+        self.P = P
+        self.z = z
+        self.jacobi = jacobi
+        self._B = eModified_B(P, z, jacobi)
+        b0 = 0.5 * (1.0 - self.z)
+        self._pow = PowOptimiser(2*P-1, b0)
+        self._g = self._B.generate() + self._generate()
+
+    def generate_variable(self, p, q, r):
+        return symbols(f"modPyrC_{p}_{q}_{r}_{self.z}")
+
+    def _generate(self):
+        g = []
+        b0 = 0.5 * (1.0 - self.z)
+        b1 = 0.5 * (1.0 + self.z)
+        for p in range(self.P):
+            for q in range(self.P):
+                for r in range(self.P - max(p, q)):
+                    lhs = self.generate_variable(p,q,r)
+                    rhs = None
+                    if p == 0:
+                        rhs = self._B.generate_variable(q, r)
+                    elif p == 1:
+                        if q == 0:
+                            rhs = self._B.generate_variable(1, r)
+                        else:
+                            rhs = self._B.generate_variable(q, r)
+                    else:
+                        if q < 2:
+                            rhs = self._B.generate_variable(p, r)
+                        else:
+                            if r == 0:
+                                rhs = self._pow.generate_variable(p + q - 2)
+                            else:
+                                rhs = self._pow.generate_variable(p + q - 2) * b1 * self.jacobi.generate_variable(r - 1, 2 * p + 2 * q - 3, 1)
+
+                    assert rhs is not None
+                    g.append(
+                        (
+                            lhs, 
+                            rhs
+                        )
+                    )
+        return g
+
+    def generate(self):
+        return self._g
+
+
 def generate_statement(lhs, rhs, t):
-    
 
     expand_pow = create_expand_pow_optimization(99)
     expr = sympy.printing.c.ccode(expand_pow(rhs), standard="C99")
@@ -391,9 +453,19 @@ if __name__ == "__main__":
     #quad = quadrilateral_evaluate_scalar(4, dofs, eta0, eta1)
     #quad = quadrilateral_evaluate_scalar(8, dofs, eta0, eta1)
 
-    quad = quadrilateral_evaluate_vector(4, dofs, eta0, eta1)
-    quad = quadrilateral_evaluate_vector(8, dofs, eta0, eta1)
+    #quad = quadrilateral_evaluate_vector(4, dofs, eta0, eta1)
+    #quad = quadrilateral_evaluate_vector(8, dofs, eta0, eta1)
+
+    etaC = symbols("etaC")
+    jacobiC = GenJacobi(etaC)
+    dirC = eModified_C(8, etaC, jacobiC)
+    instrC, opsC = generate_block((jacobiC, dirC))
+    print("\n".join(instrC))
 
 
-
+    etaPyrC = symbols("etaPyrC")
+    jacobiPyrC = GenJacobi(etaPyrC)
+    dirPyrC = eModified_PyrC(8, etaPyrC, jacobiPyrC)
+    instrPyrC, opsPyrC = generate_block((jacobiPyrC, dirPyrC))
+    print("\n".join(instrPyrC))
 
