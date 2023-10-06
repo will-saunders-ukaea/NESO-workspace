@@ -28,7 +28,7 @@
             <P> num_particles_total = 1000000 </P>
             <P> num_particles_per_cell = -1 </P>
             <P> particle_time_step = 0.001 </P>
-            <P> particle_num_time_steps = 100 </P>
+            <P> particle_num_time_steps = 200 </P>
             <P> particle_num_write_particle_steps = 0 </P>
             <P> particle_num_write_field_energy_steps = 0 </P>
             <P> particle_num_write_field_steps = 0 </P>
