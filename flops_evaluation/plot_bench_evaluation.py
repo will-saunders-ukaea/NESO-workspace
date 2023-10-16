@@ -30,7 +30,13 @@ if __name__ == "__main__":
     
     assert len(sys.argv) > 1
     h5file = h5py.File(sys.argv[1], 'r')
-    flops = np.array(h5file["flops_evaluation"]) * 1E-9
+    if "flops_evaluation" in h5file.keys():
+        mode = "evaluation"
+        flops = np.array(h5file["flops_evaluation"]) * 1E-9
+    elif "flops_projection" in h5file.keys():
+        mode = "projection"
+        flops = np.array(h5file["flops_projection"]) * 1E-9
+
     size = h5file.attrs["mpi_size"]
     num_modes = h5file.attrs["num_modes"]
     theoretical_max = float(sys.argv[2]) if len(sys.argv) > 2 else None
@@ -60,7 +66,7 @@ if __name__ == "__main__":
 
     for gx in range(6):
         ax.bar(x_positions[:, gx], flops[:, gx], width=bar_width, label=labels[gx])
-    plt.xticks([(r + 0.5) * bar_stride for r in range(size)], [str(rx) for rx in range(size)])
+    plt.xticks([(r + 2.5/7) * bar_stride for r in range(size)], [str(rx) for rx in range(size)])
 
     
     if theoretical_max is None:
@@ -73,7 +79,7 @@ if __name__ == "__main__":
     ax.legend()
     ax.set_ylabel(r"GFLOPs")
     ax.set_xlabel(r"MPI rank")
-    fig.savefig("benchmark_flops_evaluation.pdf", bbox_inches="tight")
+    fig.savefig(f"benchmark_flops_{mode}.pdf", bbox_inches="tight")
 
 
 
