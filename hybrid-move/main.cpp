@@ -21,6 +21,10 @@ inline void hybrid_move_driver(const int N_total,
   const double cell_extent = 1.0;
   const int subdivision_order = 1;
   const int stencil_width = 1;
+  
+  const int global_cell_count = dims[0] * dims[1] * std::pow(std::pow(2, subdivision_order), ndim);
+  const int npart_per_cell = std::round((double) N_total / (double) global_cell_count);
+
   auto mesh = std::make_shared<CartesianHMesh>(MPI_COMM_WORLD, ndim, dims, cell_extent,
                       subdivision_order, stencil_width);
 
@@ -31,8 +35,7 @@ inline void hybrid_move_driver(const int N_total,
   auto domain = std::make_shared<Domain>(mesh, cart_local_mapper);
 
   ParticleSpec particle_spec{ParticleProp(Sym<REAL>("P"), ndim, true),
-                             ParticleProp(Sym<REAL>("P_ORIG"), ndim),
-                             ParticleProp(Sym<REAL>("V"), 3),
+                             ParticleProp(Sym<REAL>("V"), ndim),
                              ParticleProp(Sym<INT>("CELL_ID"), 1, true),
                              ParticleProp(Sym<INT>("ID"), 1)};
 
@@ -48,50 +51,40 @@ inline void hybrid_move_driver(const int N_total,
   std::mt19937 rng_vel(52234231 + rank);
   std::mt19937 rng_rank(18241);
   
-  
-  int rstart, rend;
-  get_decomp_1d(size, N_total, rank, &rstart, &rend);
-  const int N = rend - rstart;
-
-  int N_check = -1;
-  MPICHK(MPI_Allreduce(&N, &N_check, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD));
-  NESOASSERT(N_check == N_total, "Error creating particles");
-
 
   const REAL dt = 0.001;
   const int cell_count = domain->mesh->get_cell_count();
+  const int N = npart_per_cell * cell_count;
+  const int N_total_actual = npart_per_cell * global_cell_count;
 
   if (rank == 0){
-    nprint("Num Particles:", N_total);
+    nprint("Num Particles requested:", N_total);
+    nprint("Num Particles actual:", N_total_actual);
     nprint("Num Warm-up Steps:", Nsteps_warmup);
     nprint("Num Steps:", Nsteps);
   }
   
   if (N > 0){
-  auto positions =
-      uniform_within_extents(N, ndim, mesh->global_extents, rng_pos);
+  std::vector<std::vector<double>> positions;
+  std::vector<int> cells;
+  uniform_within_cartesian_cells(mesh, npart_per_cell, positions, cells, rng_pos);
+
   auto velocities = NESO::Particles::normal_distribution(
-      N, 3, 0.0, 0.5, rng_vel);
+      N, ndim, 0.0, 0.5, rng_vel);
   std::uniform_int_distribution<int> uniform_dist(
       0, size - 1);
   ParticleSet initial_distribution(N, A->get_particle_spec());
   for (int px = 0; px < N; px++) {
     for (int dimx = 0; dimx < ndim; dimx++) {
-      initial_distribution[Sym<REAL>("P")][px][dimx] = positions[dimx][px];
-      initial_distribution[Sym<REAL>("P_ORIG")][px][dimx] = positions[dimx][px];
+      initial_distribution[Sym<REAL>("P")][px][dimx] = positions.at(dimx).at(px);
+      initial_distribution[Sym<REAL>("V")][px][dimx] = velocities.at(dimx).at(px);
     }
-    for (int dimx = 0; dimx < 3; dimx++) {
-      initial_distribution[Sym<REAL>("V")][px][dimx] = velocities[dimx][px];
-    }
-    initial_distribution[Sym<INT>("CELL_ID")][px][0] = px % cell_count;
+    initial_distribution[Sym<INT>("CELL_ID")][px][0] = cells.at(px);
     initial_distribution[Sym<INT>("ID")][px][0] = px;
-    const auto px_rank = uniform_dist(rng_rank);
-    initial_distribution[Sym<INT>("NESO_MPI_RANK")][px][0] = px_rank;
   }
   A->add_particles_local(initial_distribution);
   }
-  parallel_advection_initialisation(A, 64);
-
+  //parallel_advection_initialisation(A, 64);
 
   if (rank == 0){
     std::cout << "Particles Added..." << std::endl;
@@ -100,50 +93,33 @@ inline void hybrid_move_driver(const int N_total,
   auto pbc = std::make_shared<CartesianPeriodic>(sycl_target, mesh, A->position_dat);
   auto ccb = std::make_shared<CartesianCellBin>(sycl_target, mesh, A->position_dat, A->cell_id_dat);
 
-  auto lambda_advect = [&] {
 
-    auto t0 = profile_timestamp();
+  ParticleLoop advect_new(
+    "Avection",
+    A,
+    [=](auto V, auto P){
+      for(int dx=0 ; dx<ndim ; dx++){
+        P[dx] += dt * V[dx];
+      }
+    },
+    Access::read(Sym<REAL>("V")),
+    Access::write(Sym<REAL>("P"))
+  );
 
-    auto k_P = A->get_dat(Sym<REAL>("P"))->cell_dat.device_ptr();
-    const auto k_V = A->get_dat(Sym<REAL>("V"))->cell_dat.device_ptr();
-    const auto k_ndim = ndim;
-    const auto k_dt = dt;
-
-    const auto pl_iter_range = A->mpi_rank_dat->get_particle_loop_iter_range();
-    const auto pl_stride = A->mpi_rank_dat->get_particle_loop_cell_stride();
-    const auto pl_npart_cell = A->mpi_rank_dat->get_particle_loop_npart_cell();
-
-    sycl_target->profile_map.inc("Advect", "Prepare", 1, profile_elapsed(t0, profile_timestamp()));
-    sycl_target->queue
-        .submit([&](sycl::handler &cgh) {
-          cgh.parallel_for<>(
-              sycl::range<1>(pl_iter_range), [=](sycl::id<1> idx) {
-                NESO_PARTICLES_KERNEL_START
-                const INT cellx = NESO_PARTICLES_KERNEL_CELL;
-                const INT layerx = NESO_PARTICLES_KERNEL_LAYER;
-                for (int dimx = 0; dimx < k_ndim; dimx++) {
-                  k_P[cellx][dimx][layerx] += k_V[cellx][dimx][layerx] * k_dt;
-                }
-                NESO_PARTICLES_KERNEL_END
-              });
-        })
-        .wait_and_throw();
-    sycl_target->profile_map.inc("Advect", "Execute", 1, profile_elapsed(t0, profile_timestamp()));
-  };
 
   REAL T = 0.0;
  
   pbc->execute();
   A->hybrid_move();
   ccb->execute();
-  A->cell_move();  
+  A->cell_move();
 
   MPI_Barrier(sycl_target->comm_pair.comm_parent);
   if (rank == 0){
-    std::cout << N_total << " Particles Distributed..." << std::endl;
+    std::cout << N_total_actual << " Particles Distributed..." << std::endl;
   }
 
-  H5Part h5part("traj.h5part", A, Sym<REAL>("P"), Sym<INT>("CELL_ID"));
+  //H5Part h5part("traj.h5part", A, Sym<REAL>("P"), Sym<INT>("CELL_ID"));
 
   for (int stepx = 0; stepx < Nsteps_warmup; stepx++) {
 
@@ -153,9 +129,9 @@ inline void hybrid_move_driver(const int N_total,
 
     ccb->execute();
     A->cell_move();
-    h5part.write();
-
-    lambda_advect();
+    //h5part.write();
+    
+    advect_new.execute();
 
     T += dt;
     
@@ -163,7 +139,7 @@ inline void hybrid_move_driver(const int N_total,
       std::cout << stepx << std::endl;
     }
   }
-  h5part.close();
+  //h5part.close();
   sycl_target->profile_map.reset();
 
   std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
@@ -177,8 +153,8 @@ inline void hybrid_move_driver(const int N_total,
 
     ccb->execute();
     A->cell_move();
+    advect_new.execute();
 
-    lambda_advect();
 
     T += dt;   
     if( (stepx % 100 == 0) && (rank == 0)) {
