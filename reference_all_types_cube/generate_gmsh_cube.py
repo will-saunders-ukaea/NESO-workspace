@@ -3,8 +3,9 @@ import sys
 import numpy as np
 
 # small values generate a more refined mesh
+element_order = 2
 lc = 0.5
-perturb_max = 0.0
+perturb_max = 0.05
 #perturb_max = 0.08
 
 
@@ -134,8 +135,13 @@ for z in volumes_to_be_structured:
     gmsh.model.mesh.set_transfinite_volume(z)
 
 
+
+
 # We finally generate the mesh
 gmsh.model.mesh.generate(3)
+
+gmsh.model.mesh.setOrder(element_order)
+
 
 # perturb inner points
 perturb = perturb_max > 0.0
@@ -159,6 +165,8 @@ if perturb:
 
     vertex_ids, _, _ = gmsh.model.mesh.get_nodes()
 
+    print("Num vertices:", len(vertex_ids))
+
     for vx in vertex_ids:
         n = gmsh.model.mesh.get_node(vx)
         nn = perturb_node(n)
@@ -167,7 +175,8 @@ if perturb:
 
 # save the mesh
 mod = "_perturbed" if perturb else ""
-gmsh.write(f"mixed_ref_cube_{lc}{mod}.msh")
+order = f"_order_{element_order}" if element_order > 1 else ""
+gmsh.write(f"mixed_ref_cube_{lc}{mod}{order}.msh")
 # Launch the GUI to see the results:
 if "--visualise" in sys.argv:
     gmsh.fltk.run()
