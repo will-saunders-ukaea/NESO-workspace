@@ -1,0 +1,76 @@
+import json
+import glob
+import numpy as np
+import glob
+import math
+import sys
+import pandas as pd
+import plotly.express as px
+
+class ColourMapper:
+    def __init__(self):
+        self.num_colours = 0
+        self.names = {}
+    def get(self, name):
+        if name in self.names:
+            return self.names[name]
+        else:
+            n = self.num_colours
+            self.names[name] = n
+            self.num_colours += 1
+            return n
+
+if __name__ == "__main__":
+    
+    files = glob.glob(sys.argv[1] + "*.json")
+    
+    cutoff_start = float(sys.argv[2])
+    cutoff_end = float(sys.argv[3])
+
+    dd = {
+        "rank": [],
+        "name": [],
+        "time_start": [],
+        "time_end": [],
+        "time_elapsed": [],
+        "colour": [],
+    }
+
+    colour_mapper = ColourMapper()
+
+    for fx in files:
+        data = json.loads(open(fx).read())
+        rank = data["rank"]
+        for rx in data["regions"]:
+            time_start = rx[2]
+            time_end = rx[3]
+            if (time_start >= cutoff_start) and (time_end <= cutoff_end):
+                dd["rank"].append(rank)
+                name = rx[0] + ":" + rx[1]
+                dd["name"].append(name)
+                dd["time_start"].append(time_start)
+                dd["time_end"].append(time_end)
+                dd["time_elapsed"].append(time_end - time_start)
+                dd["colour"].append(px.colors.qualitative.Alphabet[colour_mapper.get(name)])
+
+    df = pd.DataFrame.from_dict(dd)
+    print(df)
+
+    fig = px.bar(
+        df, 
+        x="time_elapsed", 
+        base="time_start", 
+        y="rank", 
+        orientation='h',
+        hover_data=["name", "time_start", "time_end", "time_elapsed"],
+        color="colour",
+        #barmode="overlay",
+        #barmode="group",
+        barmode="relative",
+    )
+    fig.update_coloraxes(showscale=False)
+    fig.show()
+
+
+
+

@@ -58,6 +58,7 @@ inline void hybrid_move_driver(const int N_total,
   const int N_total_actual = npart_per_cell * global_cell_count;
 
   if (rank == 0){
+    nprint("Stencil width:", stencil_width);
     nprint("Num Particles requested:", N_total);
     nprint("Num Particles actual:", N_total_actual);
     nprint("Num Warm-up Steps:", Nsteps_warmup);
