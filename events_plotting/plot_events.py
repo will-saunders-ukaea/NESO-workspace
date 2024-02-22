@@ -32,6 +32,7 @@ if __name__ == "__main__":
         "name": [],
         "time_start": [],
         "time_end": [],
+        "time_elapsed_plot": [],
         "time_elapsed": [],
         "colour": [],
     }
@@ -50,27 +51,36 @@ if __name__ == "__main__":
                 dd["name"].append(name)
                 dd["time_start"].append(time_start)
                 dd["time_end"].append(time_end)
+                dd["time_elapsed_plot"].append(time_end - time_start)
                 dd["time_elapsed"].append(time_end - time_start)
-                dd["colour"].append(px.colors.qualitative.Alphabet[colour_mapper.get(name)])
+                dd["colour"].append(px.colors.qualitative.Dark24[colour_mapper.get(name)])
 
     df = pd.DataFrame.from_dict(dd)
     print(df)
 
     fig = px.bar(
         df, 
-        x="time_elapsed", 
+        x="time_elapsed_plot", 
         base="time_start", 
         y="rank", 
         orientation='h',
-        hover_data=["name", "time_start", "time_end", "time_elapsed"],
-        color="colour",
-        #barmode="overlay",
+        hover_data={
+            "name" : True, 
+            "time_start": True, 
+            "time_end" : True, 
+            "time_elapsed_plot" : False,
+            "time_elapsed" : True,
+            "colour": False,
+        }
+        ,
+        color="name",
+        barmode="overlay",
         #barmode="group",
-        barmode="relative",
+        #barmode="relative",
+        color_discrete_sequence=px.colors.qualitative.Dark24,
+        hover_name="name",
     )
-    fig.update_coloraxes(showscale=False)
+
     fig.show()
-
-
 
 
