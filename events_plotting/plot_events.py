@@ -58,6 +58,13 @@ if __name__ == "__main__":
     df = pd.DataFrame.from_dict(dd)
     print(df)
 
+    labels = {
+        "time_elapsed_plot": "Time",
+        "time_start": "Start Time",
+        "time_end": "End Time",
+        "time_elapsed": "Time Elapsed",
+    }
+
     fig = px.bar(
         df, 
         x="time_elapsed_plot", 
@@ -79,8 +86,8 @@ if __name__ == "__main__":
         #barmode="relative",
         color_discrete_sequence=px.colors.qualitative.Dark24,
         hover_name="name",
+        labels=labels,
     )
 
     fig.show()
-
 
