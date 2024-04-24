@@ -1,4 +1,9 @@
+"""
+Helper script for plotting ProfileRegions.
+"""
+
 import json
+import os
 import glob
 import numpy as np
 import glob
@@ -7,10 +12,12 @@ import sys
 import pandas as pd
 import plotly.express as px
 
+
 class ColourMapper:
     def __init__(self):
         self.num_colours = 0
         self.names = {}
+
     def get(self, name):
         if name in self.names:
             return self.names[name]
@@ -20,12 +27,24 @@ class ColourMapper:
             self.num_colours += 1
             return n
 
+
 if __name__ == "__main__":
-    
-    files = glob.glob(sys.argv[1] + "*.json")
-    
-    cutoff_start = float(sys.argv[2])
-    cutoff_end = float(sys.argv[3])
+
+    if len(sys.argv) < 2:
+        print("""Error: Expected at least one argument. Arguments are:
+    1) A directory containing JSON files containing regions to plot.
+    2) (optional) A start time to ignore events before.
+    3) (optional) A end time to ignore events after. """)
+        exit(-1)
+
+    files = glob.glob(os.path.join(sys.argv[1], "*.json"))
+    cutoff_start = -sys.float_info.max
+    cutoff_end = sys.float_info.max
+
+    if len(sys.argv) > 2:
+        cutoff_start = float(sys.argv[2])
+    if len(sys.argv) > 3:
+        cutoff_end = float(sys.argv[3])
 
     dd = {
         "rank": [],
@@ -38,6 +57,8 @@ if __name__ == "__main__":
     }
 
     colour_mapper = ColourMapper()
+
+    print(f"Found {len(files)} source files.")
 
     for fx in files:
         data = json.loads(open(fx).read())
@@ -53,7 +74,9 @@ if __name__ == "__main__":
                 dd["time_end"].append(time_end)
                 dd["time_elapsed_plot"].append(time_end - time_start)
                 dd["time_elapsed"].append(time_end - time_start)
-                dd["colour"].append(px.colors.qualitative.Dark24[colour_mapper.get(name)])
+                dd["colour"].append(
+                    px.colors.qualitative.Dark24[colour_mapper.get(name)]
+                )
 
     df = pd.DataFrame.from_dict(dd)
     print(df)
@@ -66,28 +89,26 @@ if __name__ == "__main__":
     }
 
     fig = px.bar(
-        df, 
-        x="time_elapsed_plot", 
-        base="time_start", 
-        y="rank", 
-        orientation='h',
+        df,
+        x="time_elapsed_plot",
+        base="time_start",
+        y="rank",
+        orientation="h",
         hover_data={
-            "name" : True, 
-            "time_start": True, 
-            "time_end" : True, 
-            "time_elapsed_plot" : False,
-            "time_elapsed" : True,
+            "name": True,
+            "time_start": True,
+            "time_end": True,
+            "time_elapsed_plot": False,
+            "time_elapsed": True,
             "colour": False,
-        }
-        ,
+        },
         color="name",
         barmode="overlay",
-        #barmode="group",
-        #barmode="relative",
+        # barmode="group",
+        # barmode="relative",
         color_discrete_sequence=px.colors.qualitative.Dark24,
         hover_name="name",
         labels=labels,
     )
 
     fig.show()
-
