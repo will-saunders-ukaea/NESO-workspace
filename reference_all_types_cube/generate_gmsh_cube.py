@@ -5,8 +5,10 @@ import numpy as np
 # small values generate a more refined mesh
 element_order = 1
 lc = 0.5
-perturb_max = 0.05
-#perturb_max = 0.08
+validate_tolerance = 1.0e-10
+# perturb_max = 0.05
+# perturb_max = 0.08
+perturb_max = 0.0
 
 
 class EntityMap:
@@ -74,7 +76,15 @@ for z in range(5):
 # add the volumes
 for z in range(5):
     gmsh.model.geo.addSurfaceLoop(
-        [sm[f"{z}P"], sm[f"{z+1}P"], sm[f"{z}N"], sm[f"{z}W"], sm[f"{z}S"], sm[f"{z}E"]], slm[f"{z}"]
+        [
+            sm[f"{z}P"],
+            sm[f"{z+1}P"],
+            sm[f"{z}N"],
+            sm[f"{z}W"],
+            sm[f"{z}S"],
+            sm[f"{z}E"],
+        ],
+        slm[f"{z}"],
     )
     gmsh.model.geo.addVolume([slm[f"{z}"]], vm[f"{z}"])
 
@@ -135,13 +145,62 @@ for z in volumes_to_be_structured:
     gmsh.model.mesh.set_transfinite_volume(z)
 
 
-
-
 # We finally generate the mesh
 gmsh.model.mesh.generate(3)
 
 gmsh.model.mesh.setOrder(element_order)
 
+
+def get_vertex_coords(node_id):
+    return gmsh.model.mesh.get_node(node_id)[0]
+
+
+def get_all_quads():
+    element_types, element_ids, element_nodes = gmsh.model.mesh.get_elements(2)
+    quad_index = np.where(element_types == 3)[0][0]
+    quad_ids = element_ids[quad_index]
+    quad_nodes = element_nodes[quad_index]
+    quads = []
+    for qi, qx in enumerate(quad_ids):
+
+        coords = np.zeros(shape=(4, 3))
+        for ni, nodex in enumerate(quad_nodes[qi * 4 : (qi + 1) * 4 :]):
+            coords[ni, :] = get_vertex_coords(nodex)
+
+        quads.append((qx, quad_nodes[qi * 4 : (qi + 1) * 4 :], coords))
+
+    return quads
+
+
+def validate_quad_in_plane(quad):
+    v0 = quad[2][0, :]
+    v1 = quad[2][1, :]
+    v2 = quad[2][2, :]
+    v3 = quad[2][3, :]
+
+    # Make plane from v0-v1 and v0-v4 then check v3 is in the plane.
+    d0 = v1 - v0
+    d1 = v3 - v0
+    dtest = v2 - v0
+    dplane = np.cross(d0, d1)
+    return abs(np.dot(dplane, dtest))
+
+
+def validate_linear_mesh():
+    quads = get_all_quads()
+    max_err = 0.0
+    for qx in quads:
+        print(qx[0])
+        print(qx[1])
+        print(qx[2])
+        err = validate_quad_in_plane(qx)
+        max_err = max(err, max_err)
+    print("Max error:", max_err)
+    if err > validate_tolerance:
+        raise RuntimeError("Linear validation failed")
+
+
+validate_linear_mesh()
 
 # perturb inner points
 perturb = perturb_max > 0.0
@@ -171,6 +230,8 @@ if perturb:
         n = gmsh.model.mesh.get_node(vx)
         nn = perturb_node(n)
         gmsh.model.mesh.set_node(vx, nn[0], nn[1])
+
+validate_linear_mesh()
 
 
 # save the mesh
