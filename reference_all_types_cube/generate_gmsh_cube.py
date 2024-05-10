@@ -8,7 +8,7 @@ lc = 0.5
 validate_tolerance = 1.0e-10
 # perturb_max = 0.05
 # perturb_max = 0.08
-perturb_max = 0.0
+perturb_max = 0.00
 
 
 class EntityMap:
@@ -196,7 +196,7 @@ def validate_linear_mesh():
         err = validate_quad_in_plane(qx)
         max_err = max(err, max_err)
     print("Max error:", max_err)
-    if err > validate_tolerance:
+    if max_err > validate_tolerance:
         raise RuntimeError("Linear validation failed")
 
 
