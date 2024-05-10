@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 # small values generate a more refined mesh
-element_order = 2
+element_order = 1
 lc = 0.5
 perturb_max = 0.05
 #perturb_max = 0.08
