@@ -246,7 +246,7 @@ def make_gmsh_mesh():
             nn = perturb_node(n)
             gmsh.model.mesh.set_node(vx, nn[0], nn[1])
 
-        def get_nodes_in_slice(zmin, zmax):
+        def get_nodes_in_slicez(zmin, zmax):
             nodes = []
             vertex_ids = set(gmsh.model.mesh.get_nodes()[0])
             for vx in vertex_ids:
@@ -255,7 +255,25 @@ def make_gmsh_mesh():
                     nodes.append(vx)
             return nodes
 
-        prism_nodes = get_nodes_in_slice(zlevels[2], zlevels[3])
+        def get_nodes_in_slicexz(xmin, xmax, zmin, zmax):
+            znodes = get_nodes_in_slicez(zmin, zmax)
+            nodes = []
+            for vx in znodes:
+                x = get_vertex_coords(vx)[0]
+                if (x >= xmin) and (x <= xmax):
+                    nodes.append(vx)
+            return nodes
+
+        def get_nodes_in_sliceyz(ymin, ymax, zmin, zmax):
+            znodes = get_nodes_in_slicez(zmin, zmax)
+            nodes = []
+            for vx in znodes:
+                y = get_vertex_coords(vx)[1]
+                if (y >= ymin) and (y <= ymax):
+                    nodes.append(vx)
+            return nodes
+
+        prism_nodes = get_nodes_in_slicez(zlevels[2], zlevels[3])
         print("Number of prism nodes:", len(prism_nodes))
         for vx in prism_nodes:
             n = gmsh.model.mesh.get_node(vx)
@@ -263,6 +281,58 @@ def make_gmsh_mesh():
             if not on_boundary(coords):
                 coords[2] += np.random.uniform(-perturb_max, perturb_max)
                 gmsh.model.mesh.set_node(vx, coords, nn[1])
+
+        def perturb_hex_nodes(hex_nodes, offset):
+            for vx in hex_nodes:
+                n = gmsh.model.mesh.get_node(vx)
+                coords = n[0]
+                for dimx in range(3):
+                    coords[dimx] += offset[dimx]
+                gmsh.model.mesh.set_node(vx, coords, nn[1])
+
+        # bottom slices
+        hex_nodes = get_nodes_in_slicexz(-0.51, -0.49, zlevels[1] - 0.01, zlevels[1] + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, -perturb_max]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        hex_nodes = get_nodes_in_slicexz(0.49, 0.51, zlevels[1] - 0.01, zlevels[1] + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, -perturb_max * 0.9]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        bottom_layer = 0.5 * zlevels[0] + 0.5 * zlevels[1]
+        hex_nodes = get_nodes_in_slicexz(-0.51, -0.49, bottom_layer - 0.01, bottom_layer + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, perturb_max * 0.9]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        hex_nodes = get_nodes_in_slicexz(0.49, 0.51, bottom_layer - 0.01, bottom_layer + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, perturb_max * 0.8]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        # top slices
+        hex_nodes = get_nodes_in_sliceyz(-0.51, -0.49, zlevels[-2] - 0.01, zlevels[-2] + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, -perturb_max * 0.95]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        hex_nodes = get_nodes_in_sliceyz(0.49, 0.51, zlevels[-2] - 0.01, zlevels[-2] + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, -perturb_max * 0.85]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        top_layer = 0.5 * zlevels[-1] + 0.5 * zlevels[-2]
+        hex_nodes = get_nodes_in_sliceyz(-0.51, -0.49, top_layer - 0.01, top_layer + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, perturb_max * 0.95]
+        perturb_hex_nodes(hex_nodes, offset)
+
+        hex_nodes = get_nodes_in_sliceyz(0.49, 0.51, top_layer - 0.01, top_layer + 0.01)
+        print("Number of hex nodes:", len(hex_nodes))
+        offset = [0.0, 0.0, perturb_max * 0.85]
+        perturb_hex_nodes(hex_nodes, offset)
 
     validate_linear_mesh()
 
