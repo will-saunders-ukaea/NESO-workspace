@@ -1,16 +1,15 @@
 """
-Helper script for plotting ProfileRegions.
+Helper script for plotting ProfileRegions. Usage like:
+
+python plot_regions.py -s <start_time> -e <end_time> *.json
 """
 
 import json
 import os
-import glob
-import numpy as np
-import glob
-import math
 import sys
 import pandas as pd
 import plotly.express as px
+import argparse
 
 
 class ColourMapper:
@@ -30,21 +29,38 @@ class ColourMapper:
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
-        print("""Error: Expected at least one argument. Arguments are:
-    1) A directory containing JSON files containing regions to plot.
-    2) (optional) A start time to ignore events before.
-    3) (optional) A end time to ignore events after. """)
+    parser = argparse.ArgumentParser(
+        description=f"""Plot regions from NESO-Particles ProfileRegion. For example:
+    python {os.path.basename(sys.argv[0])} -s <start_time> -e <end_time> *.json"""
+    )
+
+    parser.add_argument(
+        "-s",
+        type=float,
+        default=-sys.float_info.max,
+        help="Specify the start time for region reading and plotting. By Default the start of all regions will be used.",
+    )
+    parser.add_argument(
+        "-e",
+        type=float,
+        default=sys.float_info.max,
+        help="Specify the end time for region reading and plotting. By default the end of all regions will be used.",
+    )
+    parser.add_argument(
+        "json_files",
+        nargs=argparse.REMAINDER,
+        help="JSON files to parse and plot.",
+    )
+
+    args_all = parser.parse_known_args()
+    args = args_all[0]
+    files = args_all[0].json_files
+    if len(files) < 1:
+        print("Did not find any JSON files to process.")
         exit(-1)
 
-    files = glob.glob(os.path.join(sys.argv[1], "*.json"))
-    cutoff_start = -sys.float_info.max
-    cutoff_end = sys.float_info.max
-
-    if len(sys.argv) > 2:
-        cutoff_start = float(sys.argv[2])
-    if len(sys.argv) > 3:
-        cutoff_end = float(sys.argv[3])
+    cutoff_start = args.s
+    cutoff_end = args.e
 
     dd = {
         "rank": [],
