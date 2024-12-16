@@ -3,12 +3,12 @@ import sys
 import numpy as np
 
 # small values generate a more refined mesh
-element_order = 1
+element_order = 2
 lc = 0.5
 validate_tolerance = 1.0e-10
 # perturb_max = 0.05
 # perturb_max = 0.08
-perturb_max = 0.05
+perturb_max = 0.02
 
 
 def make_gmsh_mesh():
@@ -332,6 +332,20 @@ def make_gmsh_mesh():
         perturb_hex_nodes(hex_nodes, offset)
 
     validate_linear_mesh()
+
+    # compute jacobians:
+    elements_blocked = gmsh.model.mesh.get_elements(3)[1]
+
+    max_jac = -np.inf
+    min_jac = np.inf
+
+    for t in elements_blocked:
+        j = gmsh.model.mesh.get_element_qualities(t)
+        max_jac = max(max_jac, np.max(j))
+        min_jac = min(min_jac, np.min(j))
+    
+    print("Min Jacobian:", min_jac)
+    print("Max Jacobian:", max_jac)
 
     # save the mesh
     mod = "_perturbed" if perturb else ""

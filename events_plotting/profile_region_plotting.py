@@ -1,7 +1,7 @@
 """
 Helper script for plotting ProfileRegions. Usage like:
 
-python plot_regions.py -s <start_time> -e <end_time> *.json
+python profile_region_plotting.py -s <start_time> -e <end_time> *.json
 """
 
 import json
